@@ -1,0 +1,69 @@
+
+\subsection{XOMO: Software Process Models}\label{sec:xomoIs}
+
+Full details of XOMO have been offered in prior papers~\cite{me07f,me09a,me09e}.
+In summary, the current model inputs the parameters of \fig{cocont}
+which includes five {\em scale factors} (that exponentially affect effort)
+and 15 {\em effort multipliers} (that are linearly proportional to effort).  
+
+These variables
+are used in a variety of models. The XOMO {\em effort} model predicts for 
+``development months'' where one month
+is 152 work hours by one developer (and includes development and management hours): 
+\begin{equation}\label{eq:cocII}
+\mathit{effort}=a\prod_i EM_i *\mathit{KLOC}^{b+0.01\sum_j SF_j}
+\end{equation}
+Here, {\em EM,SF} denote the effort multipliers and scale
+factors and
+ $a,b$ are the {\em local calibration} parameters which in COCOMO-II
+have default values of 2.94 and 0.91.
+
+The variables of \fig{cocont} are also  used in
+the COQUALMO defect prediction
+model~\cite{boehm00b}.  COQUALMO assumes that
+certain variable settings {\em add} defects while
+others may {\em subtract} (and the final defect count is the number of additions, less the
+number of subtractions). 
+
+Two other models that use the variables of \fig{cocont} are the COCOMO {\em months} and {\em risk} model.
+The {\em months} model predicts for total development time and   can be used to determine staffing levels
+for a software project. For example, if {\em effort}=200  
+and {\em months}=10, then this project needs 
+$\frac{200}{10} =20$
+developers.
+
+As to the {\em risk} model, certain management decisions decrease the 
+odds of successfully completing a project. For example suppose a manager demands
+{\em more}  reliability ({\em rely}) while  {\em decreasing} analyst capability ({\em acap}).
+Such a project is ``risky'' since it means the manager is demanding more reliability from less skilled analysts.
+The COCOMO {\em risk} model contains dozens of rules that trigger on each
+such ``risky'' combinations of decisions. 
+
+XOMO is a challenging optimization problem.
+It is difficult to reduce all of {\em months}, {\em effort}, {\em defects} and {\em risk} because they are conflicting objectives: 
+some decisions that reduce one objective can increase another.
+For example,
+XOMO contains many such scenarios where the objectives conflict; some examples are as follows:
+\bi
+\item
+Increasing
+software reliability   {\em reduces} the
+  number of added defects while {\em increasing} the 
+software development effort;
+\item 
+Better documentation can improve team communication and {\em decrease} the number of introduced defects.
+However, such increased documentation {\em increases} the development effort.
+\ei
+Prior work with XOMO~\cite{me09a} found that different optimizations are found if we explore (1)~the entire
+XOMO input space or (2)~just the inputs relevant to a particular project. Put another way: what works best for one case may not work best for another case.
+Hence, we run XOMO for the three different specific cases shown in \fig{xomocases}.
+
+Each of these cases are software projects that were specified by domain experts from the NASA Jet Propulsion Laboratory (JPL).   In \fig{xomocases}, ``fl''
+is a general description of all JPL flight software while ``o2''
+describes version two of the flight guidance system
+of the Orbital Space Plane.
+
+Note that some of the COCOMO variables
+range from some {\em low} to {\em high} value while others have a fixed {\em setting}.
+For example, for ``o2'', reliability is fixed to {\em rely=5}, which is
+its highest possible value.  
