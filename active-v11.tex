@@ -639,6 +639,8 @@ WHERE recurses on the two halves, terminating when some split has less than $\sq
 
 
 \begin{figure}[!b]
+\hspace{0.4cm}
+\begin{minipage}{3.8in}
 \begin{lstlisting}[mathescape,frame=l,numbers=left]
 def fastmap(data): 
   "Project data on a line between 2 distant points"
@@ -670,7 +672,8 @@ def split(data): # Split at median
   return data[mid:], data[:mid]
 \end{lstlisting}
 \caption{Splitting data with FastMap}
-\label{fig:fastmapCode}   
+\label{fig:fastmapCode}  
+\end{minipage}
 \end{figure}
 
 \subsection{Active Learning}
@@ -692,6 +695,7 @@ Note that this approach means that (say) after 100 evaluations, it becomes possi
 
 
 \begin{figure}[!b]
+\begin{minipage}{3.2in}
 \begin{lstlisting}[mathescape,frame=r,numbers=right]
 def where(data, scores={}, lvl=10000, prune=True):  
   "Recursively split data into 2 equal sizes."
@@ -725,7 +729,8 @@ only evaluate two distant points in each cluster;
 only recurse into non-dominated halves.
 In this code, $\mu$ is size of the original data set.
 }
-\label{fig:whereCode}   
+\label{fig:whereCode} 
+\end{minipage}
 \end{figure}
 
 
@@ -840,20 +845,15 @@ The $\Delta$ parameter is the ``accelerator'' that increases mutation size (in l
 \fig{galeCode} shows GALE's top-level controller.  
 As seen in that figure, the algorithm  is an evolutionary learner which iteratively builds, mutates, and prunes a population of size $\mu$ using the active learning version of WHERE.
 The {\em candidates} function (at line 3 and 18) adds random items to the population. 
-The first call to this function (at line 3) adds $\mu$ new items. The subsequent call (at line 18) rebuilds the population back up to $\mu$ after
-WHERE has pruned solutions in dominated clusters.
+The first call to this function (at line 3) adds $\mu$ new items. The subsequent call (at line 18) rebuilds the population back up to $\mu$ after WHERE has pruned solutions in dominated clusters.
 
-Also shown in that figure is GALE's termination
-procedure: GALE exits after $\lambda$ generations with no improvement
-in any goal.
-Note that, on termination, GALE calls WHERE one last
-time at line 15 to find {\em enough} examples to
-show the user. In this call, domination pruning is
-disabled, so this call returns the poles of the
-leaf clusters.
+Also shown in that figure is GALE's termination procedure: GALE exits after $\lambda$ generations with no improvement in any goal.
+Note that, on termination, GALE calls WHERE one last time at line 15 to find {\em enough} examples to show the user. 
+In this call, domination pruning is disabled, so this call returns the poles of the leaf clusters.
 
 
 \begin{figure}[!t]
+\begin{minipage}{3.2in}
 \begin{lstlisting}[mathescape,frame=r,numbers=right]
 def mutate(leafs, scores): 
   "Mutate all candidates in all leafs."
@@ -891,9 +891,11 @@ function of \fig{fastmapCode}  is used
 to check 
 we are not rashly mutating a candidate too far away from
 the region that originally contained it.}
-\label{fig:mutantCode}   
+\label{fig:mutantCode} 
+\end{minipage}
 \end{figure}
 \begin{figure}[!t]
+\begin{minipage}{3.2in}
 \begin{lstlisting}[mathescape,frame=r,numbers=right]
 def gale(enough=16,  max=1000,  $\lambda=3$):
   "Optimization via Geometric active learning"
@@ -926,7 +928,8 @@ def improved(old,new):
 \end{lstlisting}
 
 \caption{GALE's top-level driver.}
-\label{fig:galeCode}   
+\label{fig:galeCode}
+\end{minipage}
 \end{figure}
 
 
@@ -936,52 +939,27 @@ def improved(old,new):
 \addit{cocont}
 
 \section{Models Used in This Study}\label{sec:models}
-Having described general details on MOEA, and the particular details of our approach,
-we turn now to the models used to evaluate GALE.
-With one exception, all these  are available to other researchers via the websites mentioned in 
-\tion{avail}. The exception is the CDA model since that
-requires extensive connection to proprietary NASA hardware and software.
+Having described general details on MOEA, and the particular details of our approach, we turn now to the models used to evaluate GALE.
+With one exception, all these  are available to other researchers via the websites mentioned in \tion{avail}. 
+The exception is the CDA model since that requires extensive connection to proprietary NASA hardware and software.
 
-The XOMO model~\cite{me07f,me09a,me09e}
-combines four software process models from
-Boehm’s group at the University of Southern California.
-It reports four-objective scores (which we will try to minimize):
-project {\em risk};
-development {\em effort} and {\em defects}; and total {\em months} of development.
+The XOMO model~\cite{me07f,me09a,me09e} combines four software process models from Boehm’s group at the University of Southern California.
+It reports four-objective scores (which we will try to minimize): project {\em risk}; development {\em effort} and {\em defects}; and total {\em months} of development.
 
-The POM3 model~\cite{port08,me09j}  implements the Boehm and Turner model~\cite{port08,1204376,turner03}
-of agile programming
-where teams select tasks as they appear in the scrum backlog.
+The POM3 model~\cite{port08,me09j}  implements the Boehm and Turner model~\cite{port08,1204376,turner03} of agile programming where teams select tasks as they appear in the scrum backlog.
 POM3 studies the implications of different ways to adjust task lists in the face of shifting priorities.
 
 
 
-The CDA model~\cite{Kim2011,Pritchett2011,Feigh2012,Kim2013,Pritchett2013}
-lets an engineer explore the implications of how software presents an airplane's status to a pilot
-in safety critical situations.
-CDA models how pilots interact with cockpit avionics software
-during a continuous descent approach.
+The CDA model~\cite{Kim2011,Pritchett2011,Feigh2012,Kim2013,Pritchett2013} lets an engineer explore the implications of how software presents an airplane's status to a pilot in safety critical situations. 
+CDA models how pilots interact with cockpit avionics software during a continuous descent approach.
 
-Apart from the above three models, we also explore numerous
-small maths models that are often used
-to benchmark MOEA
-problems 
-These models are called 
-BNH, 
-Golinski, 
-Srinivas, 
-Two-bar Truss, 
-Viennet2, 
-Water 
-ZDT(1,2,3,4 and 6), 
-and DTLZ(1,2,3,4,5 and 6).
-The  DTLZ suite of models is particularly useful for evaluation of MOEAs since,
-by adjusting certain model  parameters, it is possible to generate
-problems with a wide range of decisions and objectives~\cite{Zitzler2000zdtpaper,dtlz2001a}.
+Apart from the above three models, we also explore numerous small maths models that are often used to benchmark MOEA problems 
+These models are called BNH, Golinski, Srinivas, Two-bar Truss, Viennet2, Water, ZDT(1,2,3,4 and 6), and DTLZ(1,2,3,4,5 and 6).
+The  DTLZ suite of models is particularly useful for evaluation of MOEAs since, by adjusting certain model  parameters, it is possible to generate problems with a wide range of decisions and objectives~\cite{Zitzler2000zdtpaper,dtlz2001a}.
 
 For more details on these models, see the text below.
-For full details on the maths models, see the appendix
-(\fig{uncon} and \fig{con} and \fig{dtlzmodels}).
+For full details on the maths models, see the appendix (\fig{uncon} and \fig{con} and \fig{dtlzmodels}).
 
 
 
@@ -1044,37 +1022,22 @@ The optimization task is to find settings for the controllables in the last colu
 
 
 
-\subsection{POM3: A Model of Agile Development}\label{sec:pom3pom3}
-POM is short for \underline{P}ort,
-\underline{O}lkov and \underline{M}enzies, and is an
-implementation of the Boehm and Turner model of
-agile programming. For further
-details on this model 
-see~\cite{port08,1204376,turner03} but, in brief, in agile development, 
-teams adjust
-their task list according to shifting priorities.
+\subsection{POM3: A Model of Agile Development}\label{sec:pom3pom3}POM is short for \underline{P}ort, \underline{O}lkov and \underline{M}enzies, and is an implementation of the Boehm and Turner model of agile programming. 
+For further details on this model see~\cite{port08,1204376,turner03} but, in brief, in agile development, teams adjust their task list according to shifting priorities.
 
 \begin{changed}
-Turner and Boehm say that the agile
-management challenge is to strike a balance between {\em idle rates},
-{\em completion rates} and {\em overall cost}. 
+Turner and Boehm say that the agile management challenge is to strike a balance between {\em idle rates}, {\em completion rates} and {\em overall cost}. 
 \bi
 \item
-In the agile world, projects terminate after achieving a 
-{\em completion rate} of   $(X<100)$\% of its required tasks.
+In the agile world, projects terminate after achieving a {\em completion rate} of   $(X<100)$\% of its required tasks.
 \item
-Team members  become
-{\em idle} if forced to wait for a yet-to-be-finished task from other teams. 
+Team members  become {\em idle} if forced to wait for a yet-to-be-finished task from other teams. 
 \item
-To lower {\em idle rate} and  
-increase {\em completion rate}, management can hire staff- but this
-increases  {\em overall cost}.
+To lower {\em idle rate} and increase {\em completion rate}, management can hire staff--but this increases  {\em overall cost}.
 \ei
 \end{changed}
 \fig{pom3decisions}  list some of POM3's variables.
-These inputs
-characterize the difference
-between plan-based and agile-based methods:
+These inputs characterize the difference between plan-based and agile-based methods:
 \bi
 \item {\em Tsize}: project size
 \item {\em Crit:} project criticality. In Boehm \& Turner's model
@@ -1140,10 +1103,7 @@ The task of completing a project's requirements is divided amongst teams
     \textit{cost} = \textit{cost} * {C_M}^{\textit{criticality}}
     \end{equation}
     
-After generating the
-    Requirements \& Teams, POM3 runs through the follow five-part {\em shuffling} 
-    process (repeated   \mbox{$1 \le N \le 6$} times, selected
-    at random).
+After generating the Requirements \& Teams, POM3 runs through the follow five-part {\em shuffling} process (repeated   \mbox{$1 \le N \le 6$} times, selected at random).
     
     {\em 1) Collect Available Requirements.} Each team searches through
     their assigned requirements to find the available, visible
@@ -1188,33 +1148,22 @@ GALE appears to out-perform NSGA-II and SPEA2.
 \subsection{CDA: An Aviation Safety Model}\label{sec:cda}
 
 The CDA continuous descent model is used for the model-based design of cockpit avionics software~\cite{Kim2011,Pritchett2011,Feigh2012,Kim2013,Pritchett2013}.
-Internally, CDA
-models the physical aerodynamics of an aircraft's flight, the surrounding environment (e.g. winds), and the cognitive models and workload of the pilots, controllers and computers.
+Internally, CDA models the physical aerodynamics of an aircraft's flight, the surrounding environment (e.g. winds), and the cognitive models and workload of the pilots, controllers and computers.
 CDA's cognitive models have hierarchy.
 At the highest level, pilots have mission goals (such as flying and landing safely).
 The mission goals can be broken into lower-level functions such as managing the interactions with the air traffic system.
 These lower-level functions can again be decomposed into groups of tasks such as managing the trajectory, and then even further decomposed into functions such as controlling waypoints.
-For example,
-in a continuous descent arrival, pilots are cleared to land at altitude, and make a smooth descent along a four-dimensional trajectory to the runway.  
+For example, in a continuous descent arrival, pilots are cleared to land at altitude, and make a smooth descent along a four-dimensional trajectory to the runway.  
 This is in contrast to a normal approach, in which a plane is cleared for successive discrete altitudes, requiring a stepped vertical trajectory and low-altitude vectoring.  
 
 \begin{changed}
 CDA is used for requirements engineering of safety critical systems.
-NASA civil servants working on  next-generation aerospace transportation systems
-used CDA as a workbench to verify the safety properties of the requirements
-they are proposing for ground control, pilot operation, and aircraft avionics software.
-For such safety critical applications, 
-there are many advantages to using a model-based
-approach with tools like CDA.  Model-based conclusions
-are reproducible and verifiable (just run the
-model again). Also, in the model-based approach,
-it is possible to explore scenarios that would be too expensive
-or too dangerous to explore in the real world (e.g. a shearing tail wind just as a 
-airliner is near touchdown).
-Further, these models can simulate real world
-behavior much faster than real-time. For example,
-with CDA, a 20 minute descent path of an aircraft
-can be run in under 10 seconds. 
+NASA civil servants working on  next-generation aerospace transportation systems used CDA as a workbench to validate the safety properties of the requirements they are proposing for ground control, pilot operation, and aircraft avionics software.
+For such safety critical applications, there are many advantages to using a model-based approach with tools like CDA.  
+Model-based conclusions are reproducible and verifiable (just run the model again). 
+Also, in the model-based approach,it is possible to explore scenarios that would be too expensive or too dangerous to explore in the real world (e.g. a shearing tail wind just as an airliner is near touchdown).
+Further, these models can simulate real world behavior much faster than real-time. 
+For example, with CDA, a 20 minute descent path of an aircraft can be run in under 10 seconds. 
 
 The problem with CDA is that it is too slow to study.
 CDA is a large and complex model that is slow to study using traditional optimizers.
@@ -1223,9 +1172,7 @@ Given standard MOEAs, those simulations would take 300 weeks of calendar time to
 Hence, it is a suitable candidate for testing GALE.
 
 \end{changed}
-In terms of inputs and outputs,
-CDA includes all the environmental factors and
-models cognitive models of the agents (both humans and computers) interacting with models of the underlying nonlinear dynamics of flight.  
+In terms of inputs and outputs, CDA includes all the environmental factors and models cognitive models of the agents (both humans and computers) interacting with models of the underlying nonlinear dynamics of flight.  
 These models are used to 
 explore some
 {\em air-traffic scenarios}:
@@ -1244,7 +1191,7 @@ i.e. different ways of configuring the autoflight control mode such as:
     \item{\em Mixed-Automated:} As above, but the pilot uses the computer only for some tasks.
     \ee
 CDA also understands pilot {\em 
- cognitive control modes} : 
+ cognitive modes} : 
     \be
     \item{\em Opportunistic}:  Pilots monitor and perform tasks related to only the most critical functions.
     \item{\em Tactical}: Pilots cycle through most monitoring tasks, and double check some computer tasks.
@@ -1288,8 +1235,7 @@ dealing with interruptions.
 
 \section{Experimental Methods}
 
-This section describes how we applied and compared various optimization algorithms using
-the models described above
+This section describes how we applied and compared various optimization algorithms using the models described above
 
 \subsection{Comparison Optimization Algorithms}\label{sec:compares}
 \begin{changed}
@@ -1301,13 +1247,10 @@ Many of the algorithms described above such as MOEA/D and PSO
 are really {\em frameworks} within which an engineer has free reign to make numerous decisions
 (hence, 
 review papers list dozens of variants on  PSO and MOEA/D ~\cite{V.Sedenka2010,5601760}).
-Hence, in terms of {\em repeatability}, it can better to use precisely defined algorithms like NSGA-II
-and SPEA2 rather than framework algorithms such as PSO and MOEA/D.
+Hence, in terms of {\em repeatability}, it can better to use precisely defined algorithms like NSGA-II and SPEA2 rather than framework algorithms such as PSO and MOEA/D.
 
-
-Comparison algorithms should also be
-{\em appropriate to task}.  For example,
-Sayyad, Menzies et al.'s {\em push,pull} IBEA
+Comparison algorithms should also be {\em appropriate to task}.  
+For example, Sayyad, Menzies et al.'s {\em push,pull} IBEA
 extensions~\cite{sayyad13a,sayyad13b} was designed
 for a very specialized problem (systems of
 hierarchical constraints where the optimizer has
@@ -1362,8 +1305,7 @@ experiments:
 \item
 MOEAs use the same
 population$_0$ of size $\mu=100$.
-\item All MOEAs had the same early
-<stop criteria (see the
+\item All MOEAs had the same early stop criteria (see the
 $\lambda=3$ test of \fig{galeCode}).
 Without early stop, 
 number of generations is set at {\em max}$=20$.
