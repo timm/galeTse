@@ -1,0 +1,285 @@
+Most of these come off as "I see your $20.00 and raise you 0.20 cents".  We address previous replies and they admit that they're addressed but they're still unhappy.
+
+So much cherry picking, so much glancing over the paper, not enough reading between the lines.  Did anyone even mention the words runtime or number of evaluations?   
+
+And we have to take 3-month iterations to trade arguments?  I forget about things 3 days ago, much worse 90 days ago.  Or, oh right, some iterations take > 180 days.
+
+
+
+treadbelowthelineatyourownriskmytritecommentsareinblue
+================
+
+Reviewer #1:
+1.  As per reviewer # 3 - several of the conclusions you draw in this paper are already known and accepted in the more general community.  Please state clearly that you are exploring these claims specifically for the SBSE community.
+
+Cherry picking.   Conclusion is that we can do stuff already accepted in the community, but we can do it *FASTER*, as in 20 evaluations, not 200 or 2000 or 4000.    1 second, not 2 minutes or 4 hours.
+
+2.  As per reviewer #3 - some important references are missing and need to be added.
+
+  Reviewer #3 actually says the references are sufficient.    You're referring to reviewer #4, I guess.  Most of his references supplied seem supplementary, not complementary.
+
+3.  As per reviewer # 3 - question 2 "Does GALE return similar or better solutions than other MOEA tools?" is a rather simplistic question - because it is well known in almost every data mining domain that different algorithms perform better under different circumstances.   While it is OK to ask this question you should (1) constrain the question to the SBSE domain, and (2) broaden it to discuss 'under what circumstances'.
+
+   Reviewer #3 = reviewer #4 actually.  I'm not really sure about that statement either.   Since NSGA-II and SPEA2 are regarded as general algorithms in the community, and we're comparing GALE to a general algorithm, it would make total sense to ask the question that tackles external validity.   
+
+4. You need to explain why you are not comparing against the state of the art.  For example, why NSGA-II and not NSGA-III.  Was this a timing issue related to the release of NSGA-III vs. the time at which the work was performed?  This MUST be addressed.  Reviewer #1 is not yet satisfied that you have fully explained why you didn't compare to your previous approach - IBEA.
+
+  To be totally honest, because this is a Python project not a Java project.    Codebases did not match, we worked with what we had.
+
+5. As per reviewer #2 - several of the images are small/blurry and therefore hard to read.  I realize that you are running into space issues - however each diagram needs to be large enough to read.
+
+  Old people...
+
+6. Reviewer #1 still complains about the application to Software Engineering.  However, I believe you have done a good job in showing the applicability to software engineering problems and therefore I am satisfied with this aspect of the paper.  On the other hand - please see my next comment!
+
+  It should be totally fine to be a master of all arts and walk into a Math class and give a perfect lecture on Calculus.
+
+7. Reviewer #1 complains about the writing - especially that of the introduction.  I have to agree that the introduction is more in the style of a technical report than an introduction to a TSE paper.  Here are some specific suggestions for improvement:
+
+(i) In the opening paragraph explain what you mean by "options of their systems".  Make the problem more concrete for the reader.  You can do this in two sentences and it will help set the context.
+
+  Figured this phrase means enough even out of context.   Systems have options.   You want to use the best options, because poor options make the system behave, well, poorly.
+
+(ii) I don't think that process steps listed 1,2,3 work very well for an introduction.  Try to provide a better overview of the novelty of your approach - highlighting what is novel about it but saving the steps of the algorithm for a later section.
+
+  I think previous reviewers asked for it in the introduction.   Now we don't want it there.   
+
+(iii)  I'm also personally unconvinced about including Research questions on the first page.  This whole section should be about motivation.  You can explain in words what you want to evaluate and then state the research questions in another section.
+
+  See previous point.
+
+(iv) I *particularly* dislike the style of section  1.2.  I understand that you are trying to directly address reviewers concerns - but this isn't the right way to do it.  You shouldn't need to *ask*  the question "What does all this have to do with SE?" because you should have *already* answered it in the introduction.  The problem with your introduction is that you didn't answer it adequately so must recourse to Q&A.   Questions 2 and 3 are similarly problematic.  So I would sit back and completely redo the introduction.
+
+  FAQ's exist because people are unable to read.   The FAQ doesn't iterate anything that hasn't already been said.
+
+Reviewer #2:
+1. Why did you not compare GALE against your previous work (IBEA)?
+
+  IBEA has never been used in the generic domain as much as NSGA-II or SPEA2.   It simply hasn't been in enough papers to warrant comparison in our opinion.
+
+The response here is to present 3 software engineering optimization problems to which GALE is applied successfully. These three problems look interesting and their role in the paper is now much clearer. Despite these strong positive point, I don't think the concern has been fully addressed.
+
+  Still not enough?
+
+A first problem is that the three optimization problems in Section 4 are not presented clearly: for none of these problems does the paper states what are the optimization objectives and the decision variables. It is thus difficult to understand what these problems are really about and thus to validate their significance and relevance. They do look very interesting and relevant but we have to trust you without really understanding what the optimization problems are.
+
+
+  If you wanted to know objectives and decision variables, you should look closer.  Because all three of the models have them all defined.  
+
+
+A second problem is that the question of why you have not evaluate GALE on other previously published SBSE problems has not been fully answered. As said above, your argument for not applying GALE to your ICSE'13/ASE'13 problems is not clear and did not address the concern fully. We also do not know why you have not evaluated GALE on other previously published SBSE problems. It would be important to clarify whether this is for practical reasons (time, unavailability of model data) or because GALE is not applicable to other problems (which goes back to the point raised above). I also believe that comparing GALE against at least one previously published result would reinforce the credibility of the evaluation.
+
+
+  Not every model in the world is public access domain.  Many are proprietary.  We used what we have (pom3, xomo) which we had to build from scratch.  Same can be said to algorithms, but codebases are a problem, because again, we use what we have available.
+
+
+A third problem here is that the paper's contribution to software engineering is not well presented. The introduction lacks focus: it discusses many issues that seem barely related to the core contribution and it fails to present a coherent description of the paper's context, motivation, objective, and statement of contribution (the abstract should also be improved along the same line). Towards the end of the paper, the answers to research questions are also quite vague ("GALE is recommended for models that require long execution time" - what is a long execution time?) and not sufficiently relevant to software engineers. I also note that the paper's results and conclusion sections make no reference to software engineering at all.
+
+  What is long execution time?  Are you serious?  The world is full of millions and millions of models.  It's probably not too hard to take a handful of them and see who the 'long' ones are.  In our paper, CDA is the "long" one at 7 seconds a run.   You multiply that by a thousand, and 'long' will turn into several days.
+
+If the paper is rejected, I would like to finish with a word of encouragement because I think the work looks very promising, both the algorithm and its application on the 3 SE optimization problems. The paper has many presentation issues and it might be one of these papers that are very hard to write. One possible cause might be that it tries to do too much and please different groups of people at once. I still feel that the paper's core contribution is an algorithm that has nothing specific to software engineering and that it may thus be easier to first present GALE in a journal of the evolutionary computation community before subsequently presenting its applications to SE in a journal like TSE. But I could of course be wrong on this.
+
+  Well it has already been published twice now in other conferences/journals.
+
+Reviewer #3:
+1) The argument that you used only one run of CDA because it would take a week to do the 20 runs. With the cheap hardware/software configuration you used, I find it hard to believe that it is not an acceptable/affordable time to spend.
+
+  @Tim: I actually have results for 20 repeats in NSGA-II/SPEA2.   @Reviewer #3: It cost me an arm and a leg to do.   You try getting a process to run uninterrupted for 7 days.  On a NASA server.  Across the internet.   Without a T1 connection.
+
+2) Several typo issues that a spellchecker could spot. (e.g. !stop on page 18).
+
+  Not really sure what causes the upside down exclamation points.   Probably a latex error.    
+
+3) Figures 9-11 are a bit blurry. The choice of colors in Figure 11, makes it hard to see where the bars that correspond to each example end and finish.
+
+  Old people.
+
+Reviewer #4:
+
+- NSGA-II and SPEA2 were not designed for problems with a large number of
+ objectives, e.g., four or more. I don't think they should be used for
+comparison and then draw conclusions. I appreciate the authors' argument for 
+using NSGA-II and SPEA3 only (e.g., in Section 5.1), but don't find it 
+convincing. Why don't we want to use the latest algorithms that have been
+shown to be better than these two?
+
+And that totally excuses algorithms that cannot handle large number of objectives.   
+
+- The authors argued that MOEA/D is a framework and hence not used. I'm a
+ little unsure of that. There are codes (C++, Java, Matlab, etc.) on the web
+that the authors could adapt, e.g.,
+http://dces.essex.ac.uk/staff/zhang/webofmoead.htm. I think the paper will be
+a better one with a more up to date comparison. 
+
+
+C++, Java, Matlab don't equal Python.
+
+
+- The authors said that PSO and DE are MOEA frameworks. I guess they meant
+ that PSO and DE could be used for multi-objective optimisation. PSO and DE
+could be used for single or multiple objectives. They are not MOEAs. The
+authors
+said: "Multi-objective evolutionary algorithms such as NSGA-II, SPEA2, IBEA, 
+PSO, DE, MOEA/D, etc [12]-[17],..." in L14-16 on Page 3, and cited [15] and
+[16] in the list, although [15] (on PSO) is *not* about MOEAs but PSO in
+general, and [16] is about ant colony optimisation and not baout DE.
+If the authors want to cite PSO for MOEAs, they could consider the following:
+Coello, C.A.C.; Pulido, G.T.; Lechuga, M.S., "Handling multiple objectives
+with particle swarm optimization," Evolutionary Computation, IEEE Transactions
+on , vol.8, no.3, pp.256,279, June 2004
+URL:
+http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1304847&isnumber=28981
+Margarita Reyes-Sierra and Carlos A. Coello Coello, "Multi-Objective Particle
+Swarm Optimizers: A Survey of the State-of-the-Art," International Journal of 
+Computational Intelligence Research. ISSN 0973-1873 Vol.2, No.3 (2006), 
+pp. 287-308.
+
+
+Wait.  You say PSO and DE could be used for MOO.   But that does not make them .. MOO - Algorithms?
+DE even has the word evolution in it.  PSO works in iterations, hence, evolution.  Solutions evolve to the best optima.
+
+If the authors want to cite DE for MOEAs, they could consider:
+Abbass, H.A.; Sarker, R.; Newton, C., "PDE: a Pareto-frontier differential
+evolution approach for multi-objective optimization problems," Evolutionary
+Computation, 2001. Proceedings of the 2001 Congress on , vol.2, no.,
+pp.971,978 vol. 2, 2001
+URL:
+http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=934295&isnumber=20224
+The above papers are *not* the latest for MO-PSO or MO-DE, but they would be
+appropriate for the overview.
+
+
+Supplementary content.
+
+
+- Similarly, the authors should correct the inaccuracy in other parts of the
+ paper, e.g., L46-47, RHS, P10: "... review papers list dozens of variants on 
+PSO and MOEA/D [26], [30]". I think [30] is a review of DE, not an appropriate
+citation for MOEA/D. Even for [26], it's not a review paper on MO-PSO although
+it's a comparison between GAs and PSO for multi-objective optimisation.
+I might be nitpicking here, but I'm a little worried whether the authors had
+done serious literature reading as they said they had. In any case, it's worth
+going through the paper and check the accuracies of the statements.
+
+
+No comment
+
+
+- The paper still makes some general claims. I suggest that they be
+ constrained to the set of experiments. For example, L12-23, LHS, Page 2 have
+some very general statements:
+"As to RQ2 (quality), we find that (as might be expected) GALE's truncated 
+search sometimes explores a smaller hypervolume of solutions than other 
+optimizers. Yet within that smaller volume, GALE's careful directed search is 
+more spread out. More importantly, on inspection of the raw objective scores, 
+we often find better results with GALE than with other optimizers.
+From the above, the overall conclusion of this work is:
+A careful directed search over a small space can find better solutions (with 
+fewer evaluations) than a random stagger around a larger volume."
+While the above may be true in SBSE, I don't think they are original or new in
+the generic MOEA domain. For the first paragraph, that is what
+preference-based MOEAs have been doing, in terms of carefully directed search.
+A good example of drawing a conclusion appropriately is L21-23, RHS, P2: "...
+GALE is a stand-out result in that we know of no other search-based SE paper 
+that can achieve GALE's results using so few evaluations" because it makes the
+context of SBSE explicitly.
+
+
+Again, cherry picking.    If you don't think its original or new, you completely overlooked the answers to the other research questions (e.g. runtime, num evals).  This is even implied towards the end of the comment, when trying to combine several RQ's into RQ2.
+
+
+- I understand why the authors added Section 1.2, but this looks strange to me
+ for a scientific paper.
+
+
+No comment.
+
+
+- As I mentioned in my previous review, questions like
+"Question2: Will GALE work for all models?"
+are not very useful, because we know no algorithm is the best for all possible
+problems. The answer to the question will be trivial. The more interesting
+question is: When will GALE work and under what conditions in SBSE? I 
+appreciate that this is a much harder question to answer, but that does not 
+mean we should not ask it explicitly. I'm not asking the revised paper to 
+answer it fully. Some discussions based on the experimental results would 
+be good.
+
+
+When will it work?    Here's what, 2 SBSE domains and 1 Aerospace domain and a whole bunch of math models where it does work.  Enough to warrant a generality argument.
+
+What conditions does it work?   Those are in the introduction of my dissertation.    We should add them into this paper's introduction.
+
+
+- In Section 2.4, LHS: "In Particle swarm optimization, a "particle"'s 
+velocity is "pulled" towards the individual and the community's best current 
+solution [15], [25]-[27]".
+I don't think this sentence is appropriate because we are talking about MOEAs
+here, not PSO in general. You should use the MO-PSO literature. See my
+suggestion above.
+
+
+Again, PSO is a MOEA.  Just google PSO, MOEA, you get so many results where the two have been combined.
+
+
+- Similarly, the statement about DE is inaccurate to say the least:
+ "Multi-objective differential evolution: members of the frontier compete 
+(and are possibly replaced) by candidates generated via extrapolation among 
+any three other members of the frontier [29], [30]"
+I don't think [29] and [30] are about multi-objective DE. They are generic
+reviews on DE. If I recall correctly, [29] gave no multi-objective versions at
+all. 
+
+
+Maybe go read that paper instead of recalling.  But I think he's just stuck on what makes an algorithm a MOEA.
+
+
+- Interestingly, the authors were aware of NSGA-III [28], but decided to still
+ compare GALE against NSGA-II. (See my first comment.)
+
+
+Why compare to the newest technology if it has hardly been compared to by anyone else at all?  We want to get GALE out of the gate first, then we will explore other algorithms and build upon it.  That means surpassing NSGA-II and SPEA2.   Those two should be the first benchmarks of ANY MOEA.
+
+
+- Last paragraph in Section 2, Page 5, RHS. I don't think the comment on small
+ mutations is entirely correct. It has been shown that the amount of mutation
+depends on the problem as well as the search stages. In general, larger
+mutations are beneficial in the initial stages of search while smaller ones
+are better towards the end. The precise quantification of "larger" and
+"smaller" are problem-dependent.
+
+
+Nitpicky but valid.  But we're not wrong either.  He just wants us to clarify it a bit more.  But this might be distracting from the paper.
+
+
+- The paper called DTLZ benchmark functions as maths models. Any reasons for
+ not calling them benchmark functions? BTW, is it common to write "maths",
+rather than "mathematics" or "mathematical" in a formal mcienitific paper?
+
+
+Probably getting into the whole "math vs real vs simulation" classification of models.   DTLZ is a math model because it has well... direct math transformations from x to y.    This is different than xomo/pom3/cda because these three have algorithmic transformations from x to y that involve something *much more* than math functions.
+
+
+
+
+- The very last paragraph of the paper: "These results suggest that it is
+ perhaps time to reconsider
+the random mutation policy used by most MOEAs.
+GALE can navigate the space of options using far fewer
+evaluations than the random mutations of NSGA-II and
+SPEA2. We would propose a ¡°look before you leap¡±
+policy; i.e. before applying some MOEA like SPEA2
+or NSGA-II, cluster the known solutions and look for
+mutation directions in the non-dominated clusters."
+I again suggest constraining the statements to SBSE because they are not new
+in
+the evolutionary computation community. The potential weakness of random 
+mutation has been recognised by the EC community for a long time. Local
+seach was introduced into MOEAs. Mutation directions were learned and then
+used in algorithms such as CMA-ES, which has an MO version. Clustering and PCA
+were used in several estimation of distribution algorithms (EDAs), which also
+have MO versions. However, it is indeed true that no similar work has appeared 
+in SBSE.
+
+
+Needs some combination of "look before you leap" is verified; with "fast runtime, few evaluations".

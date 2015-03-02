@@ -1,0 +1,139 @@
+Editor Comments
+
+Editor
+Comments to the Author:
+The paper makes a nice contribution to SBSE.  I appreciate the improvements you've made - especially adding an entirely new example/evaluation.  I am going to recommend a minor revision -- however there are still several issues to be addressed and I will check these carefully in any resubmission.  Your color-coding was quite helpful so I encourage you to do that in the next submission too.!
+
+In particular:
+1.  As per reviewer # 3 - several of the conclusions you draw in this paper are already known and accepted in the more general community.  Please state clearly that you are exploring these claims specifically for the SBSE community.
+
+2.  As per reviewer #3 - some important references are missing and need to be added.
+
+3.  As per reviewer # 3 - question 2 "Does GALE return similar or better solutions than other MOEA tools?" is a rather simplistic question - because it is well known in almost every data mining domain that different algorithms perform better under different circumstances.   While it is OK to ask this question you should (1) constrain the question to the SBSE domain, and (2) broaden it to discuss 'under what circumstances'.
+
+4. You need to explain why you are not comparing against the state of the art.  For example, why NSGA-II and not NSGA-III.  Was this a timing issue related to the release of NSGA-III vs. the time at which the work was performed?  This MUST be addressed.  Reviewer #1 is not yet satisfied that you have fully explained why you didn't compare to your previous approach - IBEA.
+
+5. As per reviewer #2 - several of the images are small/blurry and therefore hard to read.  I realize that you are running into space issues - however each diagram needs to be large enough to read.
+
+6. Reviewer #1 still complains about the application to Software Engineering.  However, I believe you have done a good job in showing the applicability to software engineering problems and therefore I am satisfied with this aspect of the paper.  On the other hand - please see my next comment!
+
+7. Reviewer #1 complains about the writing - especially that of the introduction.  I have to agree that the introduction is more in the style of a technical report than an introduction to a TSE paper.  Here are some specific suggestions for improvement:
+
+(i) In the opening paragraph explain what you mean by "options of their systems".  Make the problem more concrete for the reader.  You can do this in two sentences and it will help set the context.
+
+(ii) I don't think that process steps listed 1,2,3 work very well for an introduction.  Try to provide a better overview of the novelty of your approach - highlighting what is novel about it but saving the steps of the algorithm for a later section.
+
+(iii)  I'm also personally unconvinced about including Research questions on the first page.  This whole section should be about motivation.  You can explain in words what you want to evaluate and then state the research questions in another section.
+
+(iv) I *particularly* dislike the style of section  1.2.  I understand that you are trying to directly address reviewers concerns - but this isn't the right way to do it.  You shouldn't need to *ask*  the question "What does all this have to do with SE?" because you should have *already* answered it in the introduction.  The problem with your introduction is that you didn't answer it adequately so must recourse to Q&A.   Questions 2 and 3 are similarly problematic.  So I would sit back and completely redo the introduction.
+
+I hope that you are able to address these concerns in your revision - and to adequately explain my Q4 above.
+
+Please also note that Reviewer #3's comments are in an attached pdf file.  I'm not sure if these get attached to your email notification of if you will have to log into the system to see them - however, it is important to read them.
+
+********************
+
+Reviewers' Comments
+
+Please note that some reviewers may have included additional comments in a separate file. If a review contains the note "see the attached file" under Section III A - Public Comments, you will need to log on to ScholarOne Manuscripts  to view the file. After logging in, select the Author Center, click on the "Manuscripts with Decisions" queue and then clicking on the "view decision letter" link for this manuscript. You must scroll down to the very bottom of the letter to see the file(s), if any.  This will open the file that the reviewer(s) or the Associate Editor included for you along with their review.
+
+Reviewer: 2
+
+Recommendation: Revise and Resubmit as “new”
+
+Comments:
+The GALE algorithm looks promising and the paper has improved but I find the revision still does not fully address some important concerns.
+
+I will only comment on the first two main concerns highlighted in the associate editor's meta-review.
+
+1. Why did you not compare GALE against your previous work (IBEA)?
+
+This has been partly answered but I find the justification unclear and leading to more questions. The justification in Section 5.1 states that GALE was designed for more general "black box" SBSE problems whereas IBEA is designed for more specialized problems involving hierarchal constraints. I am puzzled by this argument because if GALE is more general then it should be applicable to the more specialized problems to which you previously applied IBEA. A comparison would thus be possible. Your argument also suggest that there are classes of problems for which GALE is a priori more appropriate than IBEA and others for which IBEA is more appropriate than GALE. Unfortunately, the paper does not describe clearly what problems GALE is actually meant to solve. What you mean by "black box" SBSE problem is far from clear. A simple description of the mathematical optimization problem solved by GALE (i.e. its specification) is strangely missing from the paper and would already be very useful. Then if GALE is not adequate for all SBSE problems, you should clarify what SBSE problems it can and cannot be applied to -- ideally with concrete examples and references to papers where the problems are described.
+
+2. What is the paper's contribution to software engineering?
+
+The response here is to present 3 software engineering optimization problems to which GALE is applied successfully. These three problems look interesting and their role in the paper is now much clearer. Despite these strong positive point, I don't think the concern has been fully addressed.
+
+A first problem is that the three optimization problems in Section 4 are not presented clearly: for none of these problems does the paper states what are the optimization objectives and the decision variables. It is thus difficult to understand what these problems are really about and thus to validate their significance and relevance. They do look very interesting and relevant but we have to trust you without really understanding what the optimization problems are.
+
+A second problem is that the question of why you have not evaluate GALE on other previously published SBSE problems has not been fully answered. As said above, your argument for not applying GALE to your ICSE'13/ASE'13 problems is not clear and did not address the concern fully. We also do not know why you have not evaluated GALE on other previously published SBSE problems. It would be important to clarify whether this is for practical reasons (time, unavailability of model data) or because GALE is not applicable to other problems (which goes back to the point raised above). I also believe that comparing GALE against at least one previously published result would reinforce the credibility of the evaluation.
+
+A third problem here is that the paper's contribution to software engineering is not well presented. The introduction lacks focus: it discusses many issues that seem barely related to the core contribution and it fails to present a coherent description of the paper's context, motivation, objective, and statement of contribution (the abstract should also be improved along the same line). Towards the end of the paper, the answers to research questions are also quite vague ("GALE is recommended for models that require long execution time" - what is a long execution time?) and not sufficiently relevant to software engineers. I also note that the paper's results and conclusion sections make no reference to software engineering at all.
+
+If the paper is rejected, I would like to finish with a word of encouragement because I think the work looks very promising, both the algorithm and its application on the 3 SE optimization problems. The paper has many presentation issues and it might be one of these papers that are very hard to write. One possible cause might be that it tries to do too much and please different groups of people at once. I still feel that the paper's core contribution is an algorithm that has nothing specific to software engineering and that it may thus be easier to first present GALE in a journal of the evolutionary computation community before subsequently presenting its applications to SE in a journal like TSE. But I could of course be wrong on this.
+
+
+Additional Questions:
+How relevant is this manuscript to the readers of this periodical? Please explain under the Public Comments section below.: Relevant
+
+Is the manuscript technically sound? Please explain under the Public Comments section below.: Partially
+
+1. Are the title, abstract, and keywords appropriate? Please explain under the Public Comments section below.: No
+
+2. Does the manuscript contain sufficient and appropriate references? Please explain under the Public Comments section below.: References are sufficient and appropriate
+
+3. Please rate the organization and  readability of this manuscript. Please explain under the Public Comments section below.: Readable - but requires some effort to understand
+
+4. Should the supplemental material be included? (Click on the Supplementary Files icon to view files): Does not apply, no supplementary files included
+
+5. If yes to 4, should it be accepted:
+
+Please rate the manuscript. Explain your rating under the Public Comments section below.: Poor
+
+
+Reviewer: 3
+
+Recommendation: Author Should Prepare A Minor Revision
+
+Comments:
+Overall I find that all my concerns with the previous draft were addressed in the new version.
+
+I have only a few minor items to consider:
+
+1) The argument that you used only one run of CDA because it would take a week to do the 20 runs. With the cheap hardware/software configuration you used, I find it hard to believe that it is not an acceptable/affordable time to spend.
+
+2) Several typo issues that a spellchecker could spot. (e.g. !stop on page 18).
+
+3) Figures 9-11 are a bit blurry. The choice of colors in Figure 11, makes it hard to see where the bars that correspond to each example end and finish.
+
+Additional Questions:
+How relevant is this manuscript to the readers of this periodical? Please explain under the Public Comments section below.: Very Relevant
+
+Is the manuscript technically sound? Please explain under the Public Comments section below.: Yes
+
+1. Are the title, abstract, and keywords appropriate? Please explain under the Public Comments section below.: Yes
+
+2. Does the manuscript contain sufficient and appropriate references? Please explain under the Public Comments section below.: References are sufficient and appropriate
+
+3. Please rate the organization and  readability of this manuscript. Please explain under the Public Comments section below.: Readable - but requires some effort to understand
+
+4. Should the supplemental material be included? (Click on the Supplementary Files icon to view files): Yes, as part of the digital library for this submission if accepted
+
+5. If yes to 4, should it be accepted: After revisions.  Please include explanation under Public Comments below.
+
+Please rate the manuscript. Explain your rating under the Public Comments section below.: Good
+
+
+Reviewer: 4
+
+Recommendation: Author Should Prepare A Minor Revision
+
+Comments:
+Please see the attached text file.
+
+Additional Questions:
+How relevant is this manuscript to the readers of this periodical? Please explain under the Public Comments section below.: Very Relevant
+
+Is the manuscript technically sound? Please explain under the Public Comments section below.: Partially
+
+1. Are the title, abstract, and keywords appropriate? Please explain under the Public Comments section below.: Yes
+
+2. Does the manuscript contain sufficient and appropriate references? Please explain under the Public Comments section below.: Important references are missing; more references are needed
+
+3. Please rate the organization and  readability of this manuscript. Please explain under the Public Comments section below.: Readable - but requires some effort to understand
+
+4. Should the supplemental material be included? (Click on the Supplementary Files icon to view files): Does not apply, no supplementary files included
+
+5. If yes to 4, should it be accepted: After revisions.  Please include explanation under Public Comments below.
+
+Please rate the manuscript. Explain your rating under the Public Comments section below.: Good

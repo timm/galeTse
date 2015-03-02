@@ -39,11 +39,11 @@
 
 
 \definecolor{MyDarkBlue}{rgb}{0,0.08,0.45} 
-\newenvironment{changed}{\par\color{MyDarkBlue}}{\par}
-%\newenvironment{changed}{\par}{\par}
+%\newenvironment{changed}{\par\color{MyDarkBlue}}{\par}
+\newenvironment{changed}{\par}{\par}
 
-\newcommand{\ADD}[1]{\textcolor{MyDarkBlue}{{\bf #1}}}
-%\newcommand{\ADD}[1]{#1}
+%\newcommand{\ADD}[1]{\textcolor{MyDarkBlue}{{\bf #1}}}
+\newcommand{\ADD}[1]{#1}
 
 \newcommand{\addit}[1]{\begin{changed}\input{#1}\end{changed}}
 
@@ -103,18 +103,46 @@ Multi-objective optimization, Search based software engineering, Active Learning
 
 
 \section{Introduction}
-\ADD{Given recent advances in computing hardware},  
-software analysts can use automatic tools to
-explore thousands to millions
-of options of their systems. 
-Such tools work at different speeds than humans.  Valerdi notes that it can take days for
-human experts to review just a few dozen
-examples~\cite{valerdi11}.  In that same time, an
-automatic tool can explore thousands to millions to
-billions more solutions.  
-It is an overwhelming task for humans to
-certify the correctness of conclusions generated
-from so many results. Verrappa and Letier warn that
+
+In  traditional manual software engineering, engineers laboriously convert (by hand) non-executable paper models into executable code. 
+That traditional process has been the focus of much research.  
+This paper is about a new kind of SE which relies, at least in part, on executable models. 
+In this approach, engineers codify the current understanding of the domain into a model, and then study those models.
+
+Many of these models are delivered as part of working systems.
+So much so that these models now
+  mediate nearly all aspects of our lives:
+\bi
+\item If you
+  live in London or New York and need to call an
+  ambulance, that ambulance is waiting for your call
+  at a location pre-determined by a model~\cite{veer11}. 
+\item
+If you cross from Mexico to Arizona,
+a biometrics model  decides if you need
+secondary screening~\cite{Sacanamboy09}.
+\item
+ The power to make your toast comes from a
+  generator that was spun-up in response
+  to some model predicting your future electrical
+  demands~\cite{808235}.  
+\item
+If you fly a plane, extensive
+  model-based software controls many aspects of
+  flight, including what to do in emergency
+  situations~\cite{Kim2011}. \item
+If you have a heart attack, the
+   models in the defibrillator will
+  decide how to shock your heart and lungs so that
+  you might live a little longer~\cite{kamp99}.
+\ei
+
+\ADD{Given recent advances in computing hardware}, software analysts either validate these models or find optimal solutions by using automatic tools to explore thousands to millions of inputs for their systems. 
+%Such tools work at different speeds than humans.  
+Valerdi notes that, without automated tools, it can take days for human experts to review just a few dozen examples~\cite{valerdi11}.  
+In that same time, an automatic tool can explore thousands to millions to billions more solutions.  
+People find it an overwhelming task just to certify the correctness of conclusions generated from so many results. 
+Verrappa and Letier warn that
 \begin{quote}
 ``..for industrial problems, these algorithms generate
 (many) solutions, which makes the tasks of
@@ -140,114 +168,52 @@ difficult and time consuming''~\cite{veer11}.
 %% to isolate clusters of better solutions C1,C2,etc. }\label{fig:one}
 %% \end{figure}
 
-\ADD{One way to simplify the task of understanding these
-algorithms is to focus on the {\em Pareto frontier}}; i.e.
-the subset of solutions 
-that are not worse than any other (across all goals)
-but better on at least one goal. 
+\ADD{One way to simplify the task of understanding the space of possible solutions is to focus on the {\em Pareto frontier}}; i.e. the subset of solutions that are not worse than any other (across all goals) but better on at least one goal. 
 %% For example,
 %% the green dots
 %% in \fig{one} are an example of such a Pareto
 %% frontier (and the red dots are called the {\em dominated} examples).
 The problem here is that even the Pareto frontier can be too large to understand.
-Harman cautions that many frontiers are very {\em crowded}; i.e. contain thousands (or more)
-candidate solutions~\cite{harm13}.
-Hence, researchers like Verrappa and Letier add post-processors
-that (a)~cluster the Pareto frontier and
-then (b)~show users a small number of examples per cluster. 
+Harman cautions that many frontiers are very {\em crowded}; i.e. contain thousands (or more)  candidate solutions~\cite{harm13}.
+Hence, researchers like Verrappa and Letier add post-processors that (a)~cluster the Pareto frontier and then (b)~show users a small number of examples per cluster. 
 
-That approach has the drawback that
-before the users can get their explanation,
-some other process must generate the Pareto frontier-- which can be a
-very slow computation.  Zuluaga et
-al. comment on the cost of such an analysis for
-software/hardware co-design: ``synthesis of only one
-design can take hours or even
-days.''~\cite{Zuluaga:13}.  Harman~\cite{harm13}
-comments on the problems of evolving a test suite
-for software if every candidate solution requires a
-time-consuming execution of the entire system: such
-test suite generation can take weeks of execution
-time. 
+That approach has the drawback that before the users can get their explanation, some other process must generate the Pareto frontier---which can be a very slow computation.  
+Zuluaga et al. comment on the cost of such an analysis for software/hardware co-design: ``synthesis of only one design can take hours or even days.''~\cite{Zuluaga:13}.  
+Harman~\cite{harm13} comments on the problems of evolving a test suite for software if every candidate solution requires a time-consuming execution of the entire system: such test suite generation can take weeks of execution time. 
 
-For such slow computational problems, it
-would be useful to reason about a problem
-using a very small number of most informative
-examples. This paper introduces GALE, 
-an optimizer that 
-identifies and evaluates just those
-most informative
-examples, as follows:
-\begin{changed}
-\be
-\item Sort solutions (along the direction of most change);
-\item Find the {\em poles}; i.e. the two most distance candidates;
-\item Split that sort into equal halves;
-\item Evaluate only the {\em poles} of each split;
-\item Ignore any half containing a dominated pole;
-\item Recurse on the remaining halves until the splits get too small (less than $\sqrt{N}$);
-\item For all the final (smallest) splits,
-  mutate the candidates towards the better pole of
-  that split. 
-\item Go to step \#1 \ee 
-\end{changed}
-\noindent
-Note that  this a different approach
-of Verrappa \& Letier:
-GALE does not use clustering as a post-process to some other optimizer.
-Rather, GALE {\em replaces} the need for a post-processor with its tool called WHERE, which explores only two evaluations per recursive split
-of the data. Hence, this algorithm
-performs at most $2{\log_2}(N)$ evaluations per
-generation (and even less when step \#5 ignores half of a split).
+For such slow computational problems, it would be useful to reason about a problem using a very small number of most informative examples. 
+This paper introduces GALE, an optimizer that  identifies and evaluates just those most informative examples.
+Note that GALE's approach is different from that of Verrappa \& Letier: GALE does not use clustering as a post-process to some other optimizer.
+Rather, GALE {\em replaces} the need for a post-processor with its tool called WHERE, which explores only two evaluations per recursive split of the data. 
+Hence, this algorithm performs at most $2{\log_2}(N)$ evaluations per generation, and often less.
 
-This paper introduces GALE and its algorithms and 
-answers two key research questions.
+This paper introduces GALE and its algorithms and answers two key research questions for the SE-based problems explored in this paper.
 \begin{quote}
 {\bf RQ1 (speed):} Does GALE terminate faster than other multi-goal optimization tools?
 \end{quote}
-This is a concern since GALE
-must  repeatedly sort and divide  the examples (see step \#1, above)--
-which might  make  GALE  slower than other multi-goal optimizers.
+This is a concern since GALE must  repeatedly sort and divide  the examples---which might  make  GALE  slower than other multi-goal optimizers.
 
-A second 
-concern  is the quality of GALE's results:
+A second concern  is the quality of GALE's results:
 \begin{quote}
-{\bf RQ2 (quality):} Does GALE return similar or better
-solutions than other optimization tools?
+{\bf RQ2 (quality):} Does GALE return similar or better solutions than other optimization tools?
 \end{quote}
-This is a concern since GALE only examines $2\log_2(N)$ of the solutions--
-which might mean that GALE misses  useful optimizations
- found by other tools.
-
-
-
+This is a concern since GALE only examines $2\log_2(N)$ of the solutions---which might mean that GALE misses useful optimizations found by other tools.
 
 The rest of this paper addresses these  research questions.
-After  notes on related work (in Section 2)
-we present the  details of GALE (in Section 3). 
-The algorithm is  tested on many models of varying sizes, using
-a range of models described (in Section 4).
+After  notes on related work (in Section 2) we present the  details of GALE (in Section 3). 
+The algorithm is  tested on a range of SE models of varying sizes, as described in Section 4.
 Lastly, Section~5 presents answers to the research questions.
 
-As to {\bf RQ1 (speed)}, GALE ran much faster than
-other tools, especially for very large models.
-For example, 
-in our largest model, GALE terminated in four minutes
-while other tools needed seven hours.
+As to {\bf RQ1 (speed)}, GALE ran much faster than other tools for our SE models, especially for those that were very large.
+For example, in our largest model, GALE terminated in four minutes while other tools needed seven hours.
 \begin{changed}
-As to {\bf RQ2 (quality)}, we find that
-(as might be expected)
-GALE's truncated search sometimes explores a smaller  {\em hypervolume}  of 
-solutions than other optimizers.
-Yet within that smaller volume,   GALE's careful directed search
-is more {\em spread} out. More importantly, on inspection of  the raw objective scores,
-we often find better results with GALE than with other optimizers. 
+As to {\bf RQ2 (quality)}, we find that (as might be expected) GALE's truncated search sometimes explores a smaller  {\em hypervolume}  of solutions than other optimizers.
+Yet within that smaller volume,   GALE's careful directed search is more {\em spread} out. 
+More importantly, on inspection of  the raw objective scores, we often find better results with GALE than with other optimizers for our SE models of interest. 
 
 From the above, the overall conclusion of this work is:
 \begin{quote} {\em
-A careful directed search over a small space can find better solutions (with fewer
-evaluations)
-than a random stagger around a larger volume.}
+A careful directed search over a small space can find better solutions (with fewer evaluations) than a random stagger around a larger volume.}
 \end{quote}
 
 \end{changed}
@@ -268,95 +234,6 @@ from \url{github.com/tanzairatier/jmoo} (and for the XOMO software process model
 %% and more complex, it becomes harder to explore all their internal effects. Hence, tools like GALE are required
 %% to map out and better understand  the shape of those internal effects.
 
-
-\begin{changed}
-\subsection{Some Frequently Asked Questions}\label{sec:faq} 
-
-{\em Question1: What does all this have to do with Software Engineering?}
-In  traditional manual software engineering, engineers laboriously
-convert (by hand)
-non-executable paper models into executable code. That traditional process
-has been the focus of much research.  
-
-This paper is about a new kind of SE which relies, at least in
-part, on executable models. In this approach, engineers codify the current
-understanding of the domain into a model, and then study those models.
-
-Many of these models are delivered as part of working systems.
-So much so that these models now
-  mediate nearly all aspects of our lives:
-\bi
-\item If you
-  live in London or New York and need to call an
-  ambulance, that ambulance is waiting for your call
-  at a location pre-determined by a model~\cite{veer11}. 
-\item
-If you cross from Mexico to     Arizona,
-a biometrics model  decides if you need
-secondary screening~\cite{Sacanamboy09}.
-\item
- The power to make your toast comes from a
-  generator that was spun-up in response
-  to some model predicting your future electrical
-  demands~\cite{808235}.  
-\item
-If you fly a plane, extensive
-  model-based software controls many aspects of
-  flight, including what to do in emergency
-  situations~\cite{Kim2011}. \item
-If you have a heart attack, the
-   models in the defibrillator will
-  decide how to shock your heart and lungs so that
-  you might live a little longer~\cite{kamp99}.
-\ei
-We assert that more and more it will be role
-of software engineers to build and maintain those models.
-Software engineering is a resource-bound activity
-so the software engineers responsible
- for model-based software will
-need tools like GALE to rapidly build and understand those models
-(for examples of the kinds of models that might be processed,
-see later in this paper).
-
-
-{\em Question2: Will GALE work for all models?}
-Wolpert and Macready~\cite{wolpert97} showed in 1997
-that no optimizers necessarily work better than any
-other for all possible optimization
-problems\footnote{``The computational
-  cost of finding a solution, averaged over all
-  problems in the class, is the same for any
-  solution method.  No solution therefore offers a
-  short cut.''~\cite{wolpert97}}. Hence, when this paper claims that
-GALE works comparatively well, we  stress that this conclusion 
-is based on the study that applies a few optimizers to the
-22 models explored by GALE in Krall's Ph.D. thesis~\cite{krall14f}
-and the 43 models explored later in this paper.
-That said, GALE is a stand-out result in that we know of no other search-based
-SE paper that can achieve GALE's results using so few evaluations.
-
-
-{\em Question3: does GALE make the (overly simplistic) assumption
-that the shape of the Pareto frontier is linear?}  If so, then GALE will
-only work on very simple problems.
-In reply to this concern, we note that GALE
-recursively bisects the solutions into progressively
-smaller regions using the spectral learning methods 
-discussed in \tion{spectral}. Spectral learners
-reflect over the eigenvectors of the data.
-These vectors are a model of the overall direction of the
-data.  Hence, GALE's splits are not some naive division based
-on the raw dimensions. Rather, GALE's splits are very informed about the overall
-shape of the data.
-GALE's recursive splitting generates a set of
-tiny clusters. Each cluster   represents a small space
-on the Pareto frontier.  That is, GALE does not
-assume that the whole Pareto frontier can be modeled
-as one straight line. Rather, it assumes that the
-Pareto frontier can be approximated by a set of very
-small {\em locally linear} models.
-
-\end{changed}
 
 \newcommand{\Yes}{\ding{51}}
 \newcommand{\No}{\ding{55}}
@@ -414,8 +291,7 @@ small {\em locally linear} models.
 \section{Related Work}
 This section explains the following terms.
 GALE is an {\em active learner} that implements a {\em decomposition-based} {\em multi-objective evolutionary algorithm} (MOEA).
-GALE's mutators use  {\em continuous domination} and {\em spectral learning}
-to push solutions away from worse regions.
+GALE's mutators use  {\em continuous domination} and {\em spectral learning} to push solutions away from worse regions.
 
 %% \subsection{SBSE}
 
@@ -521,99 +397,40 @@ to push solutions away from worse regions.
 
 \subsection{MOEA}\label{sec:w}
 Evolutionary optimizers explore {\em populations} of candidate solutions.
-In each {\em generation} some {\em mutator} makes changes
-to the current population. A {\em select} operator then picks the best mutants
-which are then {\em combined} is some manner to become generation $i+1$.
-This century, there has been much new work on
-multi-objective evolutionary algorithms (MOEA) with 2 or 3 objectives
-(as
-well as many-objective optimization, with many more
-objectives).   
-MOEAs address a major drawback with traditional single goal
-optimization.
+In each {\em generation} some {\em mutator} makes changes to the current population. 
+A {\em select} operator then picks the best mutants which are then {\em combined} in some manner to become generation $i+1$.
+This century, there has been much new work on multi-objective evolutionary algorithms (MOEA) with 2 or 3 objectives (as well as many-objective optimization, with many more objectives).   
+MOEAs address a major drawback with traditional single goal optimization.
 
 \begin{changed}
-In the traditional approach, the space of solution options
-was explored by assigning
-``magic'' weights to the objectives, then using an {\em aggregation function} to accumulate
-the results. Such solutions may be  ``brittle'';
-i.e. they
-change dramatically if we alter the magic weights.  
+In the traditional approach, the space of solution options was explored by assigning ``magic'' weights to the objectives, then using an {\em aggregation function} to accumulate the results. 
+Such solutions may be  ``brittle''; i.e. they change dramatically if we alter the magic weights.  
 
-To avoid the problem
-of magic weights, a multi-objective optimizer tries to produce the space of solutions
-that would be generated across all possible values of the magic weights.
-Multi-objective evolutionary algorithms
-such as NSGA-II, SPEA2, IBEA, PSO, DE, MOEA/D, etc~\cite{deb00afast,zit02,Zitzler04indicator-basedselection,Poli07particleswarm,585892,zhang07},
-try to push
-a cloud of solutions towards an outer envelope of
-preferred solutions.
-These algorithms eschew the idea of
-single solutions, preferring instead to use the {\em domination function} (discussed below) to
-map out the
-terrain of all useful solutions.
+To avoid the problem of magic weights, a multi-objective optimizer tries to produce the space of solutions that would be generated across all possible values of the magic weights.
+Multi-objective evolutionary algorithms such as NSGA-II, SPEA2, IBEA, PSO, DE, MOEA/D, etc~\cite{deb00afast,zit02,Zitzler04indicator-basedselection,Poli07particleswarm,585892,zhang07}, try to push a cloud of solutions towards an outer envelope of preferred solutions.
+These algorithms eschew the idea of single solutions, preferring instead to use the {\em domination function} (discussed below) to map out the terrain of all useful solutions.
 \end{changed}
  
 \begin{changed}
 \subsection{Search-based SE = MOEA + SE}\label{sec:abutsbse}
-Recently, there has been much interest in applying
-MOEAs to many areas of software engineering
-including requirements engineering, test case
-planning, software process planning, etc. 
-This {\em search-based software engineering} is a  rapidly expanding area of research and a full survey of that work is beyond
-the scope of this paper (for extensive notes on this topic, see~\cite{harman12abc,harman14}). 
-Harman et
-al.~\cite{harman12abc} comment  that the popularity of
-such SBSE methods comes from core
-properties of software:
+Recently, there has been much interest in applying MOEAs to many areas of software engineering including requirements engineering, test case planning, software process planning, etc. 
+This {\em search-based software engineering} is a  rapidly expanding area of research and a full survey of that work is beyond the scope of this paper (for extensive notes on this topic, see~\cite{harman12abc,harman14}). 
+Harman et al.~\cite{harman12abc} comment that the popularity of such SBSE methods comes from core properties of software:
 \begin{quote}
-``{\ldots}the virtual nature of
-software makes it well suited for (search-based
-optimization). The field of SE is imbued with rich
-metrics that can be useful initial candidates for
-fitness functions{\ldots}(where) fitness is computed
-directly in terms of the engineering artifact,
-without the need for the simulation and modeling
-inherent in all {\em other approaches}.''
+``{\ldots}the virtual nature of software makes it well suited for (search-based optimization). The field of SE is imbued with rich metrics that can be useful initial candidates for fitness functions{\ldots}(where) fitness is computed directly in terms of the engineering artifact, without the need for the simulation and modeling inherent in all {\em other approaches}.''
 \end{quote}
-By  ``other approaches'',
-Harman et al. refer to optimizers
-that demand detailed knowledge  about  the internals
- of a system. For example,
-gradient descent optimizers~\cite{saltelli00} require that
-models contain only differential functions
-(i.e. functions of real-valued variables whose
-derivative exists at each point in its
-domain).
-This is impractical  for  software systems since, often,
-they manipulate symbols as well as numbers.
-Also the  internal state space of software is
-usually not a smoothly differential continuous function.
-Rather, software contains many regions
-with many different properties (each ``if''
-statement in a software system can divide the
-internal state space of a program into multiple
-regions, each of which can have very different
-properties~\cite{lowrey98}).
+By  ``other approaches'', Harman et al. refer to optimizers that demand detailed knowledge  about  the internals of a system. 
+For example, gradient descent optimizers~\cite{saltelli00} require that models contain only differential functions (i.e. functions of real-valued variables whose derivative exists at each point in its domain).
+This is impractical  for  software systems since, often, they manipulate symbols as well as numbers.
+Also the  internal state space of software is usually not a smoothly differential continuous function.
+Rather, software contains many regions with many different properties (each ``if'' statement in a software system can divide the internal state space of a program into multiple regions, each of which can have very different properties~\cite{lowrey98}).
 
-Another reason to prefer this ``black box'' MOEA approach is that
-often we may know  very little about the internal details of software.
-Ever since Parnas' 1972 paper ``On the Criteria To
-Be Used in Decomposing Systems into
-Modules''~\cite{parnas72}, software engineers have
-designed their systems as ``modules'' where software's
-internal details are ``hidden'' within interface
-boundaries.  
-This concept of modularity is one of the cornerstones of modern
-software engineering since, in such modular systems
-(1)~engineers are free
-to fix and enhance the internal details of software just as long as they
-maintain the same interface;
-(2)~engineers can use the services of other systems by connecting to its interface {\em without}
-needing to understand the internal details.
+Another reason to prefer this ``black box'' MOEA approach is that often we may know  very little about the internal details of software.
+Ever since Parnas' 1972 paper ``On the Criteria To Be Used in Decomposing Systems into Modules''~\cite{parnas72}, software engineers have designed their systems as ``modules'' where software's internal details are ``hidden'' within interface boundaries.  
+This concept of modularity is one of the cornerstones of modern software engineering since, in such modular systems (1)~engineers are free to fix and enhance the internal details of software just as long as they maintain the same interface;
+(2)~engineers can use the services of other systems by connecting to its interface {\em without} needing to understand the internal details.
 
-Hence, the classic software MOEA 
-problem contains:\be
+Hence, the classic software MOEA problem contains:\be
 \item
  A system that executes, but we may not fully understand all its internal details;
 \item
@@ -622,62 +439,37 @@ Inputs represented as a flat vector of decisions;
 generate many outputs, which can be assessed by a
 fitness function.
 \ee
-GALE was designed to support this
-classic MOEA problem-- with one additional requirement
-discussed in the introduction (some systems are too
-slow to allow too many evaluations; if users are to certify the correctness of the conclusions, then
-we need to present them with a very limited number of example for their inspection):
+GALE was designed to support this classic MOEA problem---with one additional requirement discussed in the introduction (some systems are too slow to allow too many evaluations; if users are to certify the correctness of the conclusions, then we need to present them with a very limited number of example for their inspection):
 \begin{enumerate}
 \setcounter{enumi}{3}
 \item Optimization needs very few system evaluations.
 \end{enumerate}
-As an aside, we note that elsewhere, we have applied MOEA to other kinds of software systems that make changes
-to some of the above assumptions. For example, Sayyad, Menzies et al.~\cite{sayyad13a,sayyad13b} 
-adapted
-MOEA to systems containing hierarchical  constraints, for which we
-have  100\% knowledge of the internal structure.
-In that work, that structural knowledge was exploited via {\em push} and {\em pull} strategies
-that use decisions made in
-one part of a system to reduce the search space in
-other parts of the same system. Note that for the ``black box'' systems described in classic
-software MOEA problem, such {\em push,pull} strategies cannot be applied (since the internal
-structure of the software is unknown).
+As an aside, we note that elsewhere, we have applied MOEA to other kinds of software systems that make changes to some of the above assumptions. 
+For example, Sayyad, Menzies et al.~\cite{sayyad13a,sayyad13b} adapted MOEA to systems containing hierarchical  constraints, for which we have  100\% knowledge of the internal structure.
+In that work, that structural knowledge was exploited via {\em push} and {\em pull} strategies that use decisions made in one part of a system to reduce the search space in other parts of the same system. 
+Note that for the ``black box'' systems described in a classic software MOEA problem, such {\em push,pull} strategies cannot be applied (since the internal structure of the software is unknown).
 \end{changed}
+
 \subsection{MOEA and Domination}\label{sec:cdom}
 
-
-To explore the space of promising solutions,
-MOEA tools
-use a
-{\em  domination function} to
-find
-promising solutions for use in the next generation. 
-Domination functions have the property
-that, when they compare candidate solutions with many competing objectives,
-they accept large sets (and not just single items) as being better than others.
+To explore the space of promising solutions, MOEA tools use a {\em  domination function} to find promising solutions for use in the next generation. 
+Domination functions have the property that, when they compare candidate solutions with many competing objectives, they accept large sets (and not just single items) as being better than others.
 Hence, they are candidate techniques for generating the space of possible solutions.
 
-
 {\em Binary domination} says that solution $x$ ``dominates''
-solution $y$ if solution $x$'s objectives are never worse than  solution $y$
-and at least one objective in solution $x$ is better than its counterpart in $y$; i.e.
+solution $y$ if solution $x$'s objectives are never worse than solution $y$ and at least one objective in solution $x$ is better than its counterpart in $y$; i.e.
  $\left\{ \forall o  \in \textit{objectives}\;\mid\; \neg ( x_o \prec y_o )\right\}$
 and
  $\left\{
 \exists o \in \text{objectives} \;\mid\; x_o \succ y_o\right\}$, where ($\prec,\succ$) tests if $x_o$ is (worse,better) than $y_o$.
- Recently, Sayyad~\cite{sayyad13a} studied binary domination for MOEA
-with 2,3,4 or 5 objectives.  Binary domination performed as well as anything else
-for 2-objective problems but very few good solutions were found for
-the 3,4,5-goal problems.  The reason was simple: binary domination  only returns
-{\em \{true,false\}}, no matter the difference between $x_1,x_2$. As the objective
-space gets more divided at higher dimensionality, a more nuanced approach is required.
+Recently, Sayyad~\cite{sayyad13a} studied binary domination for MOEA with 2,3,4 or 5 objectives.  
+Binary domination performed as well as anything else for 2-objective problems but very few good solutions were found for the 3,4,5-goal problems.  
+The reason was simple: binary domination  only returns {\em \{true,false\}}, no matter the difference between $x_1,x_2$. 
+As the objective space gets more divided at higher dimensionality, a more nuanced approach is required.
 
 
-While binary domination just returns (true,false), a {\em continuous domination} function sums
-the total improvement of solution $x$ over all other solutions~\cite{Zitzler04indicator-basedselection}.
-In the IBEA genetic algorithm~\cite{Zitzler04indicator-basedselection}, continuous domination is defined as the sum of the
-differences between objectives (here ``$o$'' denotes the number of objectives),
-raised to some exponential power.
+While binary domination just returns (true,false), a {\em continuous domination} function sums the total improvement of solution $x$ over all other solutions~\cite{Zitzler04indicator-basedselection}.
+In the IBEA genetic algorithm~\cite{Zitzler04indicator-basedselection}, continuous domination is defined as the sum of the differences between objectives (here ``$o$'' denotes the number of objectives), raised to some exponential power.
 Continuous domination favors $y$ over $x$ if $x$ ``losses'' least:
 
 \begin{equation}\label{eq:cdom}
@@ -686,10 +478,8 @@ Continuous domination favors $y$ over $x$ if $x$ ``losses'' least:
 \textit{loss}(x,y)& = &\sum_j^o -e^{w_j(x_j - y_j)/o	} / o
 \end{array}
 \end{equation}
-In the above, $w_j\in \{-1,1\}$, depending on whether
-we seek to maximize goal $x_J$.   
-To prevent issues with exponential functions,
-the objectives are normalized.
+In the above, $w_j\in \{-1,1\}$, depending on whether we seek to maximize goal $x_J$.   
+To prevent issues with exponential functions, the objectives are normalized.
 
 \lstset{
     language=Python,
@@ -710,47 +500,22 @@ the objectives are normalized.
 }
 
 \subsection{MOEA Algorithms}\label{sec:algo}
-A standard
-MOEA strategy is to generate new individuals, and then
-focus just on those on the Pareto
-frontier. 
-For example, 
- NSGA-II~\cite{deb00afast} 
-uses a non-dominating sort
-procedure to divide the solutions into {\em bands}
-where {\em band}$_i$ dominates all of the solutions
-in {\em band}$_{j>i}$ (and NSGA-II favors the
-least-crowded solutions in the better bands).
+A standard MOEA strategy is to generate new individuals, and then focus just on those on the Pareto frontier. 
+For example, NSGA-II~\cite{deb00afast} uses a non-dominating sort procedure to divide the solutions into {\em bands} where {\em band}$_i$ dominates all of the solutions in {\em band}$_{j>i}$ (and NSGA-II favors the least-crowded solutions in the better bands).
 
 \begin{changed}
 
-There are other kinds of MOEA algorithms including the following
-(the following list is not
-exhaustive since, to say the least,   this is a very
-active area of research):
+There are other kinds of MOEA algorithms including the following (the following list is not exhaustive since, to say the least, this is a very active area of research):
 \bi
 \item
-{\em SPEA2}: favors solutions
-that dominate the most number of other solutions
-that are not nearby (to break ties, it uses 
-density sampling)~\cite{zit02}; 
-\item {\em  IBEA}:
-uses continuous dominance to find the solutions
-that dominate all others~\cite{Zitzler04indicator-basedselection}; 
-\item In {\em Particle swarm
-  optimization}, a ``particle'''s velocity is 
-``pulled' towards the individual and the community's
-best current solution~\cite{pan08,V.Sedenka2010,Kennedy:2001:SI:370449,Poli07particleswarm};
+{\em SPEA2}: favors solutions that dominate the most number of other solutions that are not nearby (to break ties, it uses density sampling)~\cite{zit02}; 
+\item {\em  IBEA}: uses continuous dominance to find the solutions that dominate all others~\cite{Zitzler04indicator-basedselection}; 
+\item In {\em Particle swarm optimization}, a ``particle'''s velocity is 
+``pulled' towards the individual and the community's best current solution~\cite{pan08,V.Sedenka2010,Kennedy:2001:SI:370449,Poli07particleswarm};
 \item 
-The {\em many-objective
-optimizers}  designed for very high
-numbers of objectives~\cite{deb14}; 
+The {\em many-objective optimizers}  designed for very high numbers of objectives~\cite{deb14}; 
 \item
-Multi-objective {\em
-differential evolution}: members of
-the frontier compete (and are possibly replaced) by
-candidates generated via extrapolation among  any three
-other members of the frontier~\cite{storn97,5601760};
+Multi-objective {\em differential evolution}: members of the frontier compete (and are possibly replaced) by candidates generated via extrapolation among  any three other members of the frontier~\cite{storn97,5601760};
 \item
 The {\em decomposition methods} discussed below.
 \ei 
@@ -758,59 +523,29 @@ The {\em decomposition methods} discussed below.
 
 \subsection{MOEA and Decomposition}\label{sec:decomp}
 
-Another way to explore solutions is to
-apply some heuristic to decompose the total
-space into many smaller problems, and then use a simpler
-optimizer for each region. For example, in
-$\mathcal{E}$-domination~\cite{deb05}, each objective $o_i$ is
-divided into equal size boxes of size $\mathcal{E}_i$
-(determined by asking users ``what is their lower
-threshold on the size of a useful effect?'').  Each
-box has a set $X.\mathit{lower}$ containing boxes
-with worse $o_i$ values.  Solutions in the same box are
-assessed and pruned in the usual way (all-pairs computation
-of a dominance function). But solutions in different
-boxes can be quickly pruned via computing dominance
-for small samples from each box. Once a box $X$ is
-marked ``dominated'', then $\mathcal{E}$-domination 
-uses the boxes
-like a reverse index to 
-quickly find all solutions in $X.\mathit{lower}$, then
-mark them as ``dominated''.
+Another way to explore solutions is to apply some heuristic to decompose the total space into many smaller problems, and then use a simpler optimizer for each region. 
+For example, in $\mathcal{E}$-domination~\cite{deb05}, each objective $o_i$ is divided into equal size boxes of size $\mathcal{E}_i$ (determined by asking users ``what is their lower threshold on the size of a useful effect?'').  
+Each box has a set $X.\mathit{lower}$ containing boxes with worse $o_i$ values.  
+Solutions in the same box are assessed and pruned in the usual way (all-pairs computation of a dominance function). 
+But solutions in different boxes can be quickly pruned via computing dominance for small samples from each box. 
+Once a box $X$ is marked ``dominated'', then $\mathcal{E}$-domination uses the boxes like a reverse index to quickly find all solutions in $X.\mathit{lower}$, then mark them as ``dominated''.
 
-Later research generalized this approach.
-MOEA/D (multiobjective
-evolutionary algorithm based on
-decomposition~\cite{zhang07}) is a generic framework
-that decomposes a multiobjective optimization
-problem into many smaller single problems, then
-applies a second optimizer to each smaller subproblem,
-simultaneously. 
+Later research generalized this approach. MOEA/D (multiobjective
+evolutionary algorithm based on decomposition~\cite{zhang07}) is a generic framework that decomposes a multiobjective optimization problem into many smaller single problems, then applies a second optimizer to each smaller subproblem, simultaneously. 
 
-GALE uses MOEA decomposition but avoids certain 
-open issues with   $\mathcal{E}$-domination and MOEA/D. 
-GALE does not need some outside oracle to specify
-$\mathcal{E}$. Rather, the size of the subproblems is determined
-via a recursive median split
-on dimensions synthesized
-using a PCA-approximation algorithm-- see the  {\em fast spectral learning}
-described in the next section. Also, GALE does not need MOEA/D's secondary optimizer to handle 
-the smaller subproblems. Rather, our approach uses  the synthesized dimensions
-to define the {\em geometry-based mutator}
-discussed below
-that ``nudges'' all candidates in a subproblem towards the better half of that subproblem. 
+GALE uses MOEA decomposition but avoids certain open issues with   $\mathcal{E}$-domination and MOEA/D. 
+GALE does not need some outside oracle to specify $\mathcal{E}$. 
+Rather, the size of the subproblems is determined via a recursive median split on dimensions synthesized using a PCA-approximation algorithm-- see the  {\em fast spectral learning} described in the next section. 
+Also, GALE does not need MOEA/D's secondary optimizer to handle the smaller subproblems. 
+Rather, our approach uses  the synthesized dimensions to define the {\em geometry-based mutator} discussed below that ``nudges'' all candidates in a subproblem towards the better half of that subproblem. 
 
 \end{changed}
 
 
 
-When domination is applied to a
-population it can be used to generate the {\em
-  Pareto frontier}, i.e.  the space of non-dominated
-and, hence, most-preferred solutions.  However, if applied without care,
-the number of evaluations of candidate solutions can accumulate.  The goal of GALE
-is to minimize this number of evaluations, via applying the {\em fast spectral learning}
-and {\em active learning} techniques discussed in the next two sections.
+When domination is applied to a population it can be used to generate the {\em Pareto frontier}, i.e.  the space of non-dominated and, hence, most-preferred solutions.  
+However, if applied without care, the number of evaluations of candidate solutions can accumulate.  
+The goal of GALE is to minimize this number of evaluations, via applying the {\em fast spectral learning} and {\em active learning} techniques discussed in the next two sections.
 
 
 
@@ -884,52 +619,23 @@ and {\em active learning} techniques discussed in the next two sections.
 
 
 \subsection{Fast Spectral Learning}\label{sec:spectral}
-This section describes how GALE
-decomposes a large space of candidate solutions into many smaller
-regions.
+This section describes how GALE decomposes a large space of candidate solutions into many smaller regions.
 
-WHERE is a {\em spectral learner}~\cite{KamvarKM03}; i.e. given solutions with $d$ possible decisions,
-it
-re-expresses those $d$ decision variables in terms of the
-$e$ eigenvectors of that data.
-This speeds up the reasoning since we then only need to
-explore the $e\ll d$   eigenvectors.
+WHERE is a {\em spectral learner}~\cite{KamvarKM03}; i.e. given solutions with $d$ possible decisions, it re-expresses those $d$ decision variables in terms of the $e$ eigenvectors of that data.
+This speeds up the reasoning since we then only need to explore the $e\ll d$   eigenvectors.
 
-A widely-used spectral learner is a principal
- components analysis (PCA).  For example, PDDP ({\em
- Principal Direction Divisive
- Partitioning})~\cite{boley98} recursively
- partitions data according to the median point of
- data projected onto the first PCA component of the
- current partition.
+A widely-used spectral learner is a principal components analysis (PCA). For example, PDDP ({\em Principal Direction Divisive Partitioning})~\cite{boley98} recursively partitions data according to the median point of data projected onto the first PCA component of the current partition.
 
-WHERE~\cite{me12d} is a linear time variant of PDDP  that uses FastMap~\cite{Faloutsos1995}
-to quickly find the first component.
-Platt~\cite{platt05} shows that FastMap is a  Nystr\"om 
-algorithm that finds approximations to eigenvectors.
-As shown in \fig{fastmapCode} on lines 3,4,5, FastMap  projects all data onto a line
-connecting two distant points\footnote{
-To define distance, WHERE uses 
-the standard Euclidean distance method proposed by 
-Aha et al.~\cite{aha91}; that is:
-$dist(x,y)= \sqrt{\sum_{i\in d} (x_i - y_i)^2}/\sqrt{ 
-\left\vert{d}\right\vert }$ where distance is
-computed on the independent decisions $d$ of each candidate solution;
-all $d_i$ values are normalized min..max, 0..1; and the calculated distance normalized by dividing by the maximum distance
-across the $d$ decisions.}. 
-FastMap finds these two distant points in near-linear
-time. The search for the poles needs only
-$O(N)$ distance comparisons (lines 19 to 24).
-The slowest part of this search is the sort used to find the median $x$ value 
-(line 10) but even that
-can be reduced to  asymptotically optimal linear-time
-via the standard median-selection algorithm~\cite{hoare61}.
+WHERE~\cite{me12d} is a linear time variant of PDDP  that uses FastMap~\cite{Faloutsos1995} to quickly find the first component.
+Platt~\cite{platt05} shows that FastMap is a  Nystr\"om algorithm that finds approximations to eigenvectors.
+As shown in \fig{fastmapCode} on lines 3,4,5, FastMap  projects all data onto a line connecting two distant points\footnote{
+To define distance, WHERE uses the standard Euclidean distance method proposed by Aha et al.~\cite{aha91}; that is: $dist(x,y)= \sqrt{\sum_{i\in d} (x_i - y_i)^2}/\sqrt{ \left\vert{d}\right\vert }$ where distance is computed on the independent decisions $d$ of each candidate solution; all $d_i$ values are normalized min..max, 0..1; and the calculated distance normalized by dividing by the maximum distance across the $d$ decisions.}. 
+FastMap finds these two distant points in near-linear time. 
+The search for the poles needs only $O(N)$ distance comparisons (lines 19 to 24).
+The slowest part of this search is the sort used to find the median $x$ value (line 10) but even that can be reduced to  asymptotically optimal linear-time via the standard median-selection algorithm~\cite{hoare61}.
 
-FastMap returns the data split into two
-equal halves.
-WHERE recurses on the two halves,
-terminating when some split
-has less than $\sqrt{N}$ items.
+FastMap returns the data split into two equal halves.
+WHERE recurses on the two halves, terminating when some split has less than $\sqrt{N}$ items.
 
 
 \begin{figure}[!b]
@@ -969,35 +675,20 @@ def split(data): # Split at median
 
 \subsection{Active Learning}
 
-One innovation in GALE is its use of  {\em active learning} during
-WHERE's decomposition of larger problems into sub-problems.
-Active learners make conclusions by asking for {\em
-more} information on the {\em least} number of
-items.  For optimization,  such active learners
-reflect over a population of decisions and only
-compute the objective scores for a small, {\em most
-informative subset} of that
-population~\cite{Zuluaga:13}. 
-GALE's active learner finds its {\em most information subset} via the WHERE
-clustering procedure described above.
+One innovation in GALE is its use of  {\em active learning} during WHERE's decomposition of larger problems into sub-problems.
+Active learners make conclusions by asking for {\em more} information on the {\em least} number of items.  
+For optimization,  such active learners reflect over a population of decisions and only compute the objective scores for a small, {\em most informative subset} of that population~\cite{Zuluaga:13}. 
+GALE's active learner finds its {\em most information subset} via the WHERE clustering procedure described above.
 Recall that
-WHERE recursively divides the candidates into many small clusters,
-and then looks for two most different (i.e. most distant) points
-in each cluster. For each cluster, GALE then evaluates only these
-two points. 
+WHERE recursively divides the candidates into many small clusters, and then looks for two most different (i.e. most distant) points in each cluster. 
+For each cluster, GALE then evaluates only these two points. 
 
-In other work, Zuluaga et
-al.~\cite{Zuluaga:13} use a {\em response surface
-  method} for their MOEA active learner.  Using some
-quickly-gathered information, they build an
-approximation to the local Pareto frontier using a
-set of Gaussian surface models. These models allow
-for an extrapolation from \ADD{known members of the
-population to new and novel members}.  Using these models, they can then
-generate approximations to the objective scores of
-mutants. Note that this approach means that (say)
-after 100 evaluations, it becomes possible to
-quickly approximate the results of (say) 1000 more.
+In other work, Zuluaga et al.~\cite{Zuluaga:13} use a {\em response surface method} for their MOEA active learner.  
+Using some quickly-gathered information, they build an approximation to the local Pareto frontier using a set of Gaussian surface models. 
+These models allow for an extrapolation from \ADD{known members of the
+population to new and novel members}.  
+Using these models, they can then generate approximations to the objective scores of mutants. 
+Note that this approach means that (say) after 100 evaluations, it becomes possible to quickly approximate the results of (say) 1000 more.
 
 
 \begin{figure}[!b]
@@ -1039,24 +730,15 @@ In this code, $\mu$ is size of the original data set.
 
 
 \begin{changed}
-Unlike Zuluaga et al., GALE makes no Gaussian parametric assumption about regions
-on the Pareto frontier.  Rather, it uses a non-parametric approach (see below).
-
-That said, GALE and  Zuluaga et al.  do share one  assumption; i.e that
-the Pareto frontier can be approximated by many tiny models.
-We defend that assumption as follows. Firstly, it works (see the results, below).
-Secondly, 
-if this
-assumption were wrong, and if there were no similar
-properties in local regions, then very small {\em
-  and} very large mutations in  evolutionary 
-algorithms would be equally effective. Our reading
-of the literature is that
-standard practice  is to restrain
-mutation to just small amounts of just a few attributes~\cite{goldberg00}.
-That is, (1)~very large mutations are depreciated; and (2)~GALE's
-locality assumption is  generally  endorsed (albeit, implicitly)  by the 
-research community.
+Unlike Zuluaga et al., GALE makes no Gaussian parametric assumption about regions on the Pareto frontier.  
+Rather, it uses a non-parametric approach (see below).
+That said, GALE and  Zuluaga et al.  do share one  assumption; i.e that the Pareto frontier can be approximated by many tiny models.
+We defend that assumption as follows. 
+Firstly, it works (see the results, below).
+Secondly, if this assumption were wrong, and if there were no similar
+properties in local regions, then very small {\em and} very large mutations in  evolutionary algorithms would be equally effective. 
+Our reading of the literature is that standard practice  is to restrain mutation to just small amounts of just a few attributes~\cite{goldberg00}.
+That is, (1)~very large mutations are depreciated; and (2)~GALE's locality assumption is  generally  endorsed (albeit, implicitly)  by the research community.
 \end{changed}
 
 
@@ -1066,7 +748,33 @@ research community.
 
 
 \section{Inside GALE}
-The  {\em \underline{g}eometric}, {\em \underline{a}ctive \underline{le}arner} called 
+
+As a summary, the  {\em \underline{g}eometric}, {\em \underline{a}ctive \underline{le}arner} called GALE works as follows:
+\begin{changed}
+\be
+\item Sort solutions (along the direction of most change);
+\item Find the {\em poles}; i.e. the two most distance candidates;
+\item Split that sort into equal halves;
+\item Evaluate only the {\em poles} of each split;
+\item Ignore any half containing a dominated pole;
+\item Recurse on the remaining halves until the splits get too small (less than $\sqrt{N}$);
+\item For all the final (smallest) splits,
+  mutate the candidates towards the better pole of
+  that split. 
+\item Go to step \#1 \ee 
+\end{changed}
+\noindent
+
+Because, at each point, GALE makes a linear approximation, a naive assumption might be that GALE can only solve linear problems.
+This is untrue.
+GALE recursively bisects the solutions into progressively smaller regions using the spectral learning methods discussed in \tion{spectral}. Spectral learners reflect over the eigenvectors of the data.
+These vectors are a model of the overall direction of the data.  
+Hence, GALE's splits are not some naive division based on the raw dimensions. 
+Rather, GALE's splits are very informed about the overall shape of the data. 
+GALE's recursive splitting generates a set of tiny clusters. Each cluster represents a small space on the Pareto frontier.  
+That is, GALE does not assume that the whole Pareto frontier can be modeled as one straight line. 
+Rather, it assumes that the Pareto frontier can be approximated by a set of very small {\em locally linear} models.
+
 GALE interfaces to models using the following functions:
 \bi
 \item Models create candidates, each  with $d$ decisions. 
@@ -1080,6 +788,8 @@ a model can compute $o$  objective scores (used in \eq{cdom}).
 \item $\mathit{minimizing}(j)$ returns true,false if the goal
 is to minimize,maximize (respectively) objective $j \in o$.
 \ei
+We discuss these functions further in the following sections.
+
 %% GALE explores the candidates via a combination of optimization and data
 %% mining. Given a current population of candidates, the
 %% algorithm learns a decision tree whose leaves are non-dominated
@@ -1090,90 +800,47 @@ is to minimize,maximize (respectively) objective $j \in o$.
 
 
 \subsection{Active Learning and GALE}\label{sec:al}
-GALE's active learner, shown in \fig{whereCode}, is a
-variant to the WHERE spectral
-learner discussed above.
-To understand this procedure, recall 
-that WHERE splits the data
-into smaller
- clusters, each of which is characterized by two
-distant points called {\em west,east}. In that space,
-{\em left} and {\em right} are  50\% of the
-data, projected onto a line running {\em west} to {\em east},
- split at the median.
-When exploring $\mu$ candidates, recursion
-halts at splits smaller
-than $\omega=\sqrt{\mu}$.
+GALE's active learner, shown in \fig{whereCode}, is a variant to the WHERE spectral learner discussed above.
+To understand this procedure, recall that WHERE splits the data into smaller clusters, each of which is characterized by two distant points called {\em west,east}. 
+In that space, {\em left} and {\em right} are  50\% of the data, projected onto a line running {\em west} to {\em east}, split at the median.
+When exploring $\mu$ candidates, recursion halts at splits smaller than $\omega=\sqrt{\mu}$.
 
-
-GALE's active learner assumes that it
-only needs to evaluate
-the 
-{\em most informative subset} 
-consisting of the {\em poles} used to
+GALE's active learner assumes that it only needs to evaluate
+the {\em most informative subset} consisting of the {\em poles} used to
 recursively divide the data. 
-Using \eq{cdom}, GALE checks for domination between
-the poles and only recurses into any non-dominated halves.
-This process, shown in \fig{whereCode}, uses FastMap
-to split the data. 
-In  \fig{whereCode}, 
- lines 12 and 14 show the domination
-pruning that disables recursion into any dominated half.
+Using \eq{cdom}, GALE checks for domination between the poles and only recurses into any non-dominated halves.
+This process, shown in \fig{whereCode}, uses FastMap to split the data. 
+In  \fig{whereCode}, lines 12 and 14 show the domination pruning that disables recursion into any dominated half.
 
 
-Given GALE's recursive binary division of $\mu$ solutions, and that this
- domination tests only two
-solutions in each division, then GALE
-performs  a maximum of $2log_2(\mu)$ evaluations. Note that when GALE prunes sub-trees,
-the actual number of evaluations is less than this maximum.
+Given GALE's recursive binary division of $\mu$ solutions, and that this domination tests only two solutions in each division, then GALE performs  a maximum of $2log_2(\mu)$ evaluations. 
+Note that when GALE prunes sub-trees, the actual number of evaluations is less than this maximum.
 
 
 \subsection{Geometry-based Mutation}\label{sec:geom}
-Most MOEAs build their next generation of solutions
-by a {\em random mutation} of members of the last
-generation. GALE's mutation policy is somewhat
-different in that it is a {\em directed mutation}.
-Specifically, GALE reflects on the geometry of the
-solution space, and mutates instances along
-gradients within that geometry. 
+Most MOEAs build their next generation of solutions by a {\em random mutation} of members of the last generation. 
+GALE's mutation policy is somewhat different in that it is a {\em directed mutation}.
+Specifically, GALE reflects on the geometry of the solution space, and mutates instances along gradients within that geometry. 
 
-To inspect that geometry, GALE reflects over the poles
-in each leaf cluster. When one pole
-is {\em better} than another, it makes sense to
-nudge all solutions in that cluster away from the
-worse pole and towards the better pole.
-By nudging solutions along a line
-running from {\em west} to {\em east}, we are
-exploiting spectral learning to implement a {\em
-spectral mutator}; i.e. one that works across a
-dimension of greatest variance that is synthesized
-from the raw dimensions.  That is, GALE models the
-local Pareto frontier as many linear models
+To inspect that geometry, GALE reflects over the poles in each leaf cluster. 
+When one pole is {\em better} than another, it makes sense to nudge all solutions in that cluster away from the worse pole and towards the better pole.
+By nudging solutions along a line running from {\em west} to {\em east}, we are exploiting spectral learning to implement a {\em spectral mutator}; i.e. one that works across a dimension of greatest variance that is synthesized from the raw dimensions.  
+That is, GALE models the local Pareto frontier as many linear models
 drawn from the local eigenvectors of different
 regions of the solution space. 
 
 \begin{changed}
 GALE's mutator is shown in \fig{mutantCode}.
-The 
-$\Delta$ parameter
-is the ``accelerator''
-that increases mutation size (in line 20)
-while the  $\gamma$ parameter is the ``brake''
-that blocks excessive mutation (in line 24).
+The $\Delta$ parameter is the ``accelerator'' that increases mutation size (in line 20) while the  $\gamma$ parameter is the ``brake'' that blocks excessive mutation (in line 24).
 
 \end{changed}
 
 \subsection{Top-level Control}
 
-\fig{galeCode} shows GALE's top-level controller.  As seen in that figure, 
-the algorithm  is an
-evolutionary learner which iteratively builds,
-mutates, and prunes a population of size $\mu$
-using the active
-learning version of WHERE.
-The {\em candidates} function (at line 3 and 18) adds random items to the 
-population. The first call to this function (at line 3)
-adds $\mu$ new items. The subsequent call (at line 18) rebuilds the population back up to $\mu$ after
+\fig{galeCode} shows GALE's top-level controller.  
+As seen in that figure, the algorithm  is an evolutionary learner which iteratively builds, mutates, and prunes a population of size $\mu$ using the active learning version of WHERE.
+The {\em candidates} function (at line 3 and 18) adds random items to the population. 
+The first call to this function (at line 3) adds $\mu$ new items. The subsequent call (at line 18) rebuilds the population back up to $\mu$ after
 WHERE has pruned solutions in dominated clusters.
 
 Also shown in that figure is GALE's termination
@@ -2369,14 +2036,28 @@ better (and note that the generality of this claim is explored futher in \tion{o
 While we have shown that GALE does better than NSGA-II and SPEA2, we have not shown
 that it works better than {\em all} optimizers. Hence, one source of bias in this
 study is the selection of comparison algorithms.
-
-As mentioned in our Frequently Asked Questions list of~\tion{faq}, 
-it is theoretically impossible to show that any optimizer is better than all others.
+Wolpert and Macready~\cite{wolpert97} showed in 1997
+that no optimizers necessarily work better than any
+other for all possible optimization
+problems\footnote{``The computational
+  cost of finding a solution, averaged over all
+  problems in the class, is the same for any
+  solution method.  No solution therefore offers a
+  short cut.''~\cite{wolpert97}}. Hence, when this paper claims that
+GALE works comparatively well, we  stress that this conclusion 
+is based on the study that applies a few optimizers to the
+22 models explored by GALE in Krall's Ph.D. thesis~\cite{krall14f}
+and the 43 models explored later in this paper.
 All that is achievable in one study is a limited comparison between select optimizers. 
 In this work, GALE was compared to 
 NSGA-II and SPEA2. Our reasons for
 selecting these two were discussed in
 \tion{compares}.  Future work should compare GALE to other optimizers.
+That said, GALE is a stand-out result in that we know of no other search-based
+SE paper that can achieve GALE's results using so few evaluations.
+
+
+
 
 \subsection{ Sampling Bias}
 This bias threatens any conclusion based on the
