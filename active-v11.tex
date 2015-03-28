@@ -39,11 +39,11 @@
 
 
 \definecolor{MyDarkBlue}{rgb}{0,0.08,0.45} 
-%\newenvironment{changed}{\par\color{MyDarkBlue}}{\par}
-\newenvironment{changed}{\par}{\par}
+\newenvironment{changed}{\par\color{MyDarkBlue}}{\par}
+%\newenvironment{changed}{\par}{\par}
 
-%\newcommand{\ADD}[1]{\textcolor{MyDarkBlue}{{\bf #1}}}
-\newcommand{\ADD}[1]{#1}
+\newcommand{\ADD}[1]{\textcolor{MyDarkBlue}{{\bf #1}}}
+%\newcommand{\ADD}[1]{#1}
 
 \newcommand{\addit}[1]{\begin{changed}\input{#1}\end{changed}}
 
@@ -69,7 +69,7 @@ misty.d.davies@nasa.gov.}
 Multi-objective evolutionary algorithms (MOEAs)
 help software engineers
 find novel solutions to complex problems. When
-\ADD{automatic tools} explore too many options, they are 
+automatic tools explore too many options, they are 
 slow to use and  hard to comprehend.
 GALE is a  near-linear time MOEA that builds
 a piecewise approximation 
@@ -101,7 +101,7 @@ Multi-objective optimization, Search based software engineering, Active Learning
 \IEEEpeerreviewmaketitle
 
 
-
+ 
 \section{Introduction}
 
 In  traditional manual software engineering, engineers laboriously convert (by hand) non-executable paper models into executable code. 
@@ -137,7 +137,7 @@ If you have a heart attack, the
   you might live a little longer~\cite{kamp99}.
 \ei
 
-\ADD{Given recent advances in computing hardware}, software analysts either validate these models or find optimal solutions by using automatic tools to explore thousands to millions of inputs for their systems. 
+Given recent advances in computing hardware, software analysts either validate these models or find optimal solutions by using automatic tools to explore thousands to millions of inputs for their systems. 
 %Such tools work at different speeds than humans.  
 Valerdi notes that, without automated tools, it can take days for human experts to review just a few dozen examples~\cite{valerdi11}.  
 In that same time, an automatic tool can explore thousands to millions to billions more solutions.  
@@ -168,7 +168,7 @@ difficult and time consuming''~\cite{veer11}.
 %% to isolate clusters of better solutions C1,C2,etc. }\label{fig:one}
 %% \end{figure}
 
-\ADD{One way to simplify the task of understanding the space of possible solutions is to focus on the {\em Pareto frontier}}; i.e. the subset of solutions that are not worse than any other (across all goals) but better on at least one goal. 
+One way to simplify the task of understanding the space of possible solutions is to focus on the {\em Pareto frontier}; i.e. the subset of solutions that are not worse than any other (across all goals) but better on at least one goal. 
 %% For example,
 %% the green dots
 %% in \fig{one} are an example of such a Pareto
@@ -185,7 +185,7 @@ For such slow computational problems, it would be useful to reason about a probl
 This paper introduces GALE, an optimizer that  identifies and evaluates just those most informative examples.
 Note that GALE's approach is different from that of Verrappa \& Letier: GALE does not use clustering as a post-process to some other optimizer.
 Rather, GALE {\em replaces} the need for a post-processor with its tool called WHERE, which explores only two evaluations per recursive split of the data. 
-Hence, this algorithm performs at most $2{\log_2}(N)$ evaluations per generation, and often less.
+Hence, this algorithm performs at most $2{\log_2}(N)$ evaluations per generation, and often less. 
 
 This paper introduces GALE and its algorithms and answers two key research questions for the SE-based problems explored in this paper.
 \begin{quote}
@@ -206,12 +206,12 @@ Lastly, Section~5 presents answers to the research questions.
 
 As to {\bf RQ1 (speed)}, GALE ran much faster than other tools for our SE models, especially for those that were very large.
 For example, in our largest model, GALE terminated in four minutes while other tools needed seven hours.
-\begin{changed}
+ 
 As to {\bf RQ2 (quality)}, we find that (as might be expected) GALE's truncated search sometimes explores a smaller  {\em hypervolume}  of solutions than other optimizers.
 Yet within that smaller volume,   GALE's careful directed search is more {\em spread} out. 
 More importantly, on inspection of  the raw objective scores, we often find better results with GALE than with other optimizers for our SE models of interest. 
 
-\end{changed}
+ 
 
 
 \subsection{Availability}\label{sec:avail}
@@ -385,7 +385,7 @@ from \url{github.com/tanzairatier/jmoo} (and for the XOMO software process model
 %% \ei\\\hline
 %% \end{tabular}
 %% \caption{Some optimization tasks explored by SBSE.}\label{fig:tasks}
-%% \end{figure}
+%% \end{figure} 
 \subsection{Optimization}\label{sec:optz}
 This paper is a comparative assessment of
 GALE with some other  {\em optimizers}.
@@ -478,8 +478,7 @@ we call these kind of problems {\em white box} or {\em structural}
 optimization. In our opinion, based
 on a reading of the current literature, functional
 optimization is more widely-applicable hence more widely-used than structural optimization.
- 
-
+  
 
 
   
@@ -506,7 +505,8 @@ solution $y$ if solution $x$'s objectives are never worse than solution $y$ and 
  $\left\{ \forall o  \in \textit{objectives}\;\mid\; \neg ( x_o \prec y_o )\right\}$
 and
  $\left\{
-\exists o \in \text{objectives} \;\mid\; where ($\prec,\succ$) tests if $x_o$ is (worse,better) than $y_o$.
+\exists o \in \text{objectives} \;\mid\; ( x_o \succ y_o ) \right\}$
+where ($\prec,\succ$) tests if $x_o$ is (worse,better) than $y_o$.
 Recently, Sayyad~\cite{sayyad13a} studied binary domination for MOEA with 2,3,4 or 5 objectives.  
 Binary domination performed as well as anything else for 2-objective problems but very few good solutions were found for the 3,4,5-goal problems.  
 The reason was simple: binary domination  only returns {\em \{true,false\}}, no matter the difference between $x_1,x_2$. 
@@ -548,7 +548,7 @@ To prevent issues with exponential functions, the objectives are normalized.
 A standard MOEA strategy is to generate new individuals, and then focus just on those on the Pareto frontier. 
 For example, NSGA-II~\cite{deb00afast} uses a non-dominating sort procedure to divide the solutions into {\em bands} where {\em band}$_i$ dominates all of the solutions in {\em band}$_{j>i}$ (and NSGA-II favors the least-crowded solutions in the better bands).
 
-\begin{changed}
+ 
 
 There are other kinds of MOEA algorithms including the following (the following list is not exhaustive since, to say the least, this is a very active area of research):
 \bi
@@ -560,7 +560,7 @@ There are other kinds of MOEA algorithms including the following (the following 
 \item 
 The {\em many-objective optimizers}  designed for very high numbers of objectives~\cite{deb14}; 
 \item
-Multi-objective {\em differential evolution}: members of the frontier compete (and are possibly replaced) by candidates generated via extrapolation among  any three other members of the frontier~\cite{storn97,5601760,abbass01};
+Multi-objective {\em differential evolution}: members of the frontier compete (and are possibly replaced) by candidates generated via extrapolation among  any three other members of the frontier~\cite{storn97,5601760,abbass01,robic05};
 \item
 The {\em decomposition methods} discussed below.
 \ei 
@@ -584,7 +584,7 @@ Rather, the size of the subproblems is determined via a recursive median split o
 Also, GALE does not need MOEA/D's secondary optimizer to handle the smaller subproblems. 
 Rather, our approach uses  the synthesized dimensions to define the {\em geometry-based mutator} discussed below that ``nudges'' all candidates in a subproblem towards the better half of that subproblem. 
 
-\end{changed}
+ 
 
 
 
@@ -732,15 +732,15 @@ For each cluster, GALE then evaluates only these two points.
 
 In other work, Zuluaga et al.~\cite{Zuluaga:13} use a {\em response surface method} for their MOEA active learner.  
 Using some quickly-gathered information, they build an approximation to the local Pareto frontier using a set of Gaussian surface models. 
-These models allow for an extrapolation from \ADD{known members of the
-population to new and novel members}.  
+These models allow for an extrapolation from  known members of the
+population to new and novel members.  
 Using these models, they can then generate approximations to the objective scores of mutants. 
 Note that this approach means that (say) after 100 evaluations, it becomes possible to quickly approximate the results of (say) 1000 more.
 
 
 \begin{figure}[!b]
 \begin{minipage}{3.2in}
-\hspace{0.4}\begin{lstlisting}[mathescape,frame=l,numbers=left]
+\hspace{0.4cm}\begin{lstlisting}[mathescape,frame=l,numbers=left]
 def where(data, scores={},lvl=10000,prune=True):  
   "Recursively split data into 2 equal sizes."
   if lvl < 1: 
@@ -778,17 +778,11 @@ In this code, $\mu$ is size of the original data set.
 \end{figure}
 
 
-\begin{changed}
+ 
 Unlike Zuluaga et al., GALE makes no Gaussian parametric assumption about regions on the Pareto frontier.  
 Rather, it uses a non-parametric approach (see below).
-That said, GALE and  Zuluaga et al.  do share one  assumption; i.e that the Pareto frontier can be approximated by many tiny models.
-We defend that assumption as follows. 
-Firstly, it works (see the results, below).
-Secondly, if this assumption were wrong, and if there were no similar
-properties in local regions, then very small {\em and} very large mutations in  evolutionary algorithms would be equally effective. 
-Our reading of the literature is that standard practice  is to restrain mutation to just small amounts of just a few attributes~\cite{goldberg00}.
-That is, (1)~very large mutations are depreciated; and (2)~GALE's locality assumption is  generally  endorsed (albeit, implicitly)  by the research community.
-\end{changed}
+That said, GALE and  Zuluaga et al.  do share one  assumption; i.e that the Pareto frontier can be approximated by many tiny models. 
+ 
 
 
 
@@ -799,7 +793,7 @@ That is, (1)~very large mutations are depreciated; and (2)~GALE's locality assum
 \section{Inside GALE}
 
 As a summary, the  {\em \underline{g}eometric}, {\em \underline{a}ctive \underline{le}arner} called GALE works as follows:
-\begin{changed}
+ 
 \be
 \item Sort solutions (along the direction of most change);
 \item Find the {\em poles}; i.e. the two most distance candidates;
@@ -811,7 +805,7 @@ As a summary, the  {\em \underline{g}eometric}, {\em \underline{a}ctive \underli
   mutate the candidates towards the better pole of
   that split. 
 \item Go to step \#1 \ee 
-\end{changed}
+ 
 \noindent
 
 Because, at each point, GALE makes a linear approximation, a naive assumption might be that GALE can only solve linear problems.
@@ -877,12 +871,11 @@ By nudging solutions along a line running from {\em west} to {\em east}, we are 
 That is, GALE models the local Pareto frontier as many linear models
 drawn from the local eigenvectors of different
 regions of the solution space. 
-
-\begin{changed}
+ 
 GALE's mutator is shown in \fig{mutantCode}.
 The $\Delta$ parameter is the ``accelerator'' that increases mutation size (in line 20) while the  $\gamma$ parameter is the ``brake'' that blocks excessive mutation (in line 24).
 
-\end{changed}
+ 
 
 \subsection{Top-level Control}
 
@@ -978,9 +971,7 @@ def improved(old,new):
 
 
 
-
-\begin{changed}
-\addit{cocont}
+ 
 
 \section{Models Used in This Study}\label{sec:models}
 Having described general details on MOEA, and the particular details of our approach, we turn now to the models used to evaluate GALE.
@@ -991,13 +982,12 @@ CDA takes hours to complete
 a single evaluation. Hence, it is an good example for exploring
 the advantages of  GALE's active learning.
 
+\input{cocont}
 
+\input{xomo}
 
-\addit{xomo}
-
-\addit{xomocases}
-
-\end{changed}
+\input{xomocases}
+ 
 
 \begin{figure*}%[!t]
 \scriptsize
@@ -1067,15 +1057,14 @@ for exploring that management challenge.
 POM3 implements the Boehm and Turner model of agile programming~\cite{turner03} where teams select tasks as they appear in the scrum backlog. POM3 can  studu the implications of different ways to adjust task lists in the face of shifting priorities.
 
 
-
-
+ 
 In this study, our optimizers tune the 
 POM3  decisions of \fig{pom3decisions} in order to
 \bi
 \item Increase completion rates;
 \item Reduce idle rates;
 \item Reduce overall cost.
-\ei
+\ei 
 For further details on this model see~\cite{port08,1204376,turner03}. A summary
 of that model is shown below.
 
@@ -1229,7 +1218,7 @@ and objectives, see the  appendix and \fig{uncon}, \fig{con}, \fig{dtlzmodels}.
 This section describes how we applied and compared various optimization algorithms using the models described above
 
 \subsection{Comparison Optimization Algorithms}\label{sec:compares}
-\begin{changed}
+ 
 To  assess a new MOEA algorithm, the performance of the new algorithm needs
 to be compared to existing approaches.
 One important criteria for selecting those existing approaches is
@@ -1275,7 +1264,7 @@ used NSGA-II or SPEA2 (of the others, 4 used some home-brew genetic algorithm an
 each used some MOEA not used by any other paper). Since NSGA-II and SPEA2 
 also score well on {\em repeatability},
 they are used in the following evaluation.
-\end{changed}
+ 
 
 \subsection{Implementations and Parameter Settings}\label{sec:expexp}
 To provide a reusable experimental framework, we
@@ -1315,7 +1304,7 @@ number of generations is set at {\em max}$=20$.
 \item
 \fig{mutantCode}'s mutators used \mbox{$\Delta=1$}, \mbox{$\gamma=1.5$}.
 \ei
-\begin{changed}
+ 
 There was one case where we adjusted these defaults. 
 DTLZ are artificial models designed to test certain hard optimization problems.
 The shape of the DTLZ Pareto frontiers are somewhat unusual:
@@ -1332,11 +1321,10 @@ so that  GALE's search for better solutions
 One final detail: to ensure an ``apples vs. apples'' comparison, 
 each of our optimizers was run on the same randomly generated
 initial population for each problem. That is, all optimizers had the same starting point.
-\end{changed}
+ 
 
 
-
-\begin{changed}
+ 
 \subsection{Evaluation Criteria}\label{sec:eval}
 An ideal optimizer explores a  large {\em
   hypervolume} of solutions;  offers many  ``best''
@@ -1378,7 +1366,7 @@ less loss is better so smaller values for {\em improvement} are desirable.
 Finally, for some models, we offer visualizations of the raw objective scores, and how they change
 as the number of evaluations change. As seen below, sometimes these ``raw'' visualizations
 offer insights that can be missed by summary statistics such as hypervolume, spread, and improvement. 
-\end{changed}
+ 
 
 
 
@@ -1464,7 +1452,7 @@ a 2 GHz Intel Core i7 MacBook Air, with 8GB of 1600 MHz DDR3 memory.
 \begin{figure}[!b]
 %\includegraphics[width=3.5in]{tim/runGale.png}
 \begin{center}
-\includegraphics[width=3in]{barcharts_runtime_galeAbsolute_v2.png}
+\includegraphics[width=2.75in]{barcharts_runtime_galeAbsolute_v2.png}
 \end{center}
 \caption{GALE, mean runtime in seconds.}\label{fig:runGale} 
 \end{figure}
@@ -1482,7 +1470,7 @@ with SPEA2, ZDT1 ran 1.5 times slower than GALE.}\label{fig:runSpea2}
 
 \begin{figure}[!b]
 %\includegraphics[width=3.5in]{tim/evals.png}
-\includegraphics[width=3.5in]{barcharts_numeval_v2.png}
+\includegraphics[width=3in]{barcharts_numeval_v2.png}
 \caption{Number of evaluations (means over all runs), sorted
 by  max. number of evaluations.}\label{fig:evals} 
 \end{figure}
@@ -1602,7 +1590,7 @@ objectives, {\em lower} y-axis values are {\em better}.
 \end{figure}
 
 
-\begin{changed}
+ 
 \subsubsection{BNH, Golinski, POM3, 
 Srinivas, 
 Two-Bar Truss, Viennet2, XOMO, and ZDT}
@@ -1721,19 +1709,20 @@ small effects). Note that, in the majority case, GALE's results
 are amongst the best for all the optimizers used in this study.
 
 
-\end{changed}
+ 
 
 
 
-\begin{changed}
+ 
 
 \begin{figure}
 \includegraphics[width=3.25in]{dtlzResults1.png}
 \caption{Quality results from DTLZ with 20 decisions and two objectives.
 Same format as \fig{rmodels}; i.e. better hypervolumes are {\em larger} while {\em better} spreads are {\em smaller}.}\label{fig:dtlz}
 \end{figure}
+
 \begin{figure*}[!t]
-\includegraphics[width=6.5in]{dtlzResults2.png}
+\includegraphics[width=7in]{dtlzResults2.png}
 \caption{DTLZ1; d=20, o=2,4,6,8.
 Each column is one objective f1,f2,...f8. Colors indicate results
 for different optimizers:
@@ -1754,9 +1743,9 @@ of the mean objective scores seen in the baseline population before any optimiza
 For these objectives, {\em better} scores are {\em smaller}.
 }\label{fig:o2468}
 \end{figure*}
- \addit{xomoresults}
+\input{xomoresults}
 \begin{figure*}[!t]
- \includegraphics[width=7in]{figures/figure_analytics_obj_score_plots.png}
+ \includegraphics[width=6.5in]{figures/figure_analytics_obj_score_plots.png}
 \caption{POM results: 20 repeats of each MOEA (one row
 per scenario). Same format as \fig{xomoresults}' i.e.
 GALE results are in 
@@ -1821,7 +1810,7 @@ out more that other optimizers.
 Since GALE takes more care to explore its volume of solutions,
 it can find better solutions (with most improvement to the objective scores)
 than other optimizers.
-\end{changed}
+ 
 
 %\begin{figure}
 %{\s%% mall
@@ -1906,14 +1895,14 @@ percentage of the requirements, then {\em incompletion} is better if it is
 less than 100\%; i.e. \[\mathit{Incompletion}\% = 100 - \mathit{Completion}\%\]
 
 
-\begin{changed}
+ 
 \noindent 
 In terms of advocating for GALE,
 the \fig{xomoresults} results for the XOMO model
 are unequivocal: on all dimensions, for all runs of the model,
 GALE finds decisions that leads to lower  (i.e.  better) objective scores than NSGA-II.
 Further, as shown on the x-axis, GALE does so using far fewer evaluations than NSGA-II.
-\end{changed}
+ 
 
 As to the \fig{zdt1objspace} results from POM3, these results are---at first glance---somewhat surprising.
 These results seem to say  say that GALE
@@ -2102,7 +2091,7 @@ standard methods (NSGA-II and SPEA2).  Also, those
 solutions were found using one to two orders of
 magnitude fewer evaluations.
 
-\begin{changed}
+ 
 As mentioned above, one repeated result was
 that
 GALE's truncated search sometimes explores a
@@ -2114,7 +2103,7 @@ A repeated result in the above is that GALE's solutions are more spread out
 than other optimizers so 
  it 
 can find better solutions (with most improvement to the objective scores).
-\end{changed}
+ 
 
 We claim that GALE's superior performance is due to
 its better understanding of the shape of the Pareto
@@ -2128,10 +2117,9 @@ frontier.
 
 
 \section*{Acknowledgements}
-\begin{changed}
+ 
 The authors wish to thank the anonymous reviewers of this
 paper for their many excellent suggestions on how to improve this paper.
-\end{changed}
 The work was funded by NSF grant CCF:1017330 and the
 Qatar/West Virginia University research grant NPRP
 09-12-5-2-470.  This research was partially
