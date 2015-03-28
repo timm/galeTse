@@ -1,13 +1,21 @@
 
 \subsection{XOMO: Software Process Models}\label{sec:xomoIs}
 
-Full details of XOMO have been offered in prior papers~\cite{me07f,me09a,me09e}.
-In summary, the current model inputs the parameters of \fig{cocont}
-which includes five {\em scale factors} (that exponentially affect effort)
-and 15 {\em effort multipliers} (that are linearly proportional to effort).  
+The XOMO model~\cite{me07f,me09a,me09e} combines four software process models from Boehm’s group at the University of Southern California.
+It reports four-objective scores (which we will try to minimize): project {\em risk}; development {\em effort} and {\em defects}; and total {\em months} of development.
 
-These variables
-are used in a variety of models. The XOMO {\em effort} model predicts for 
+
+In this study, optimizers tune the XOMO  decisions variables of \fig{cocont}
+to improve the following objectives:
+\bi
+\item Reduce risk;  
+\item Reduce effort;
+\item Reduce defects;
+\item Reduce months.
+\ei
+Full details of XOMO have been offered in prior papers~\cite{me07f,me09a,me09e}. A summary is offered below.
+
+XOMO uses the variables of  \fig{cocont}  in a variety of models. The XOMO {\em effort} model predicts for 
 ``development months'' where one month
 is 152 work hours by one developer (and includes development and management hours): 
 \begin{equation}\label{eq:cocII}

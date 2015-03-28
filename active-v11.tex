@@ -211,11 +211,6 @@ As to {\bf RQ2 (quality)}, we find that (as might be expected) GALE's truncated 
 Yet within that smaller volume,   GALE's careful directed search is more {\em spread} out. 
 More importantly, on inspection of  the raw objective scores, we often find better results with GALE than with other optimizers for our SE models of interest. 
 
-From the above, the overall conclusion of this work is:
-\begin{quote} {\em
-A careful directed search over a small space can find better solutions (with fewer evaluations) than a random stagger around a larger volume.}
-\end{quote}
-
 \end{changed}
 
 
@@ -288,10 +283,7 @@ from \url{github.com/tanzairatier/jmoo} (and for the XOMO software process model
 %% \end{figure} 
 
 
-\section{Related Work}
-This section explains the following terms.
-GALE is an {\em active learner} that implements a {\em decomposition-based} {\em multi-objective evolutionary algorithm} (MOEA).
-GALE's mutators use  {\em continuous domination} and {\em spectral learning} to push solutions away from worse regions.
+\section{Related Work} 
 
 %% \subsection{SBSE}
 
@@ -394,61 +386,114 @@ GALE's mutators use  {\em continuous domination} and {\em spectral learning} to 
 %% \end{tabular}
 %% \caption{Some optimization tasks explored by SBSE.}\label{fig:tasks}
 %% \end{figure}
+\subsection{Optimization}\label{sec:optz}
+This paper is a comparative assessment of
+GALE with some other  {\em optimizers}.
+We  argue that GALE is the preferred choice for
+{\em functional optimization} when the {\em evaluation cost}
+is very large.  
 
-\subsection{MOEA}\label{sec:w}
-Evolutionary optimizers explore {\em populations} of candidate solutions.
-In each {\em generation} some {\em mutator} makes changes to the current population. 
-A {\em select} operator then picks the best mutants which are then {\em combined} in some manner to become generation $i+1$.
-This century, there has been much new work on multi-objective evolutionary algorithms (MOEA) with 2 or 3 objectives (as well as many-objective optimization, with many more objectives).   
-MOEAs address a major drawback with traditional single goal optimization.
+This section explains all the technical terms in the last paragraph.
+To start with, we say that {\em optimizers} seek  ``candidate''(s)
+  $x$ such that it is unlikely
+ that there exists  ``better'' candidate(s) $y$. 
+Each candidate  $c_i$ is a set of decisions and their
+associated objective scores; i.e.  $c_i=(d,o)$. 
+The optimizers in this article
+assume  the existence of some fitness function $f$ that   converts {\em decisions} $d$ to
+output objectives $o$; i.e.
+\[o = f(d)\]
+Note that this paper uses the term ``model'' as a synonym for $f$.
 
-\begin{changed}
-In the traditional approach, the space of solution options was explored by assigning ``magic'' weights to the objectives, then using an {\em aggregation function} to accumulate the results. 
-Such solutions may be  ``brittle''; i.e. they change dramatically if we alter the magic weights.  
+The terms single- and multi- objective
+optimization apply when $\rvert o \rvert = 1$ and $\rvert o \rvert>1$, respectively.
+Given two candidates $x,y$:
+\bi
+\item Each with objectives $x.o_i,y.o_i$ for
+$1 \le i \le \rvert o \rvert $
+\item Then 
+$ x.o_i \prec y.o_i$ and 
+$ x.o_i \succ y.o_i$ 
+is true if   objective  $x.o_i$ is (worse,better) than $y.o_i$, respectively.
+\ei
+For single goal-optimization, the predicates
+($\prec,\succ$) suffice to test is one candidate is ``better'' than another
+For multi-objective optimization, determining ``better''  is somewhat more complicated 
+Traditionally, the space of candidates with multiple
+objectives was explored by assigning magic weights to the objectives, then using an {\em aggregation function} to accumulate the results. 
+Such solutions may be  brittle; i.e. they change dramatically if we alter the magic weights of the objectives.  
 
-To avoid the problem of magic weights, a multi-objective optimizer tries to produce the space of solutions that would be generated across all possible values of the magic weights.
-Multi-objective evolutionary algorithms such as NSGA-II, SPEA2, IBEA, PSO, DE, MOEA/D, etc~\cite{deb00afast,zit02,Zitzler04indicator-basedselection,Poli07particleswarm,585892,zhang07}, try to push a cloud of solutions towards an outer envelope of preferred solutions.
-These algorithms eschew the idea of single solutions, preferring instead to use the {\em domination function} (discussed below) to map out the terrain of all useful solutions.
-\end{changed}
- 
-\begin{changed}
-\subsection{Search-based SE = MOEA + SE}\label{sec:abutsbse}
-Recently, there has been much interest in applying MOEAs to many areas of software engineering including requirements engineering, test case planning, software process planning, etc. 
-This {\em search-based software engineering} is a  rapidly expanding area of research and a full survey of that work is beyond the scope of this paper (for extensive notes on this topic, see~\cite{harman12abc,harman14}). 
-Harman et al.~\cite{harman12abc} comment that the popularity of such SBSE methods comes from core properties of software:
-\begin{quote}
-``{\ldots}the virtual nature of software makes it well suited for (search-based optimization). The field of SE is imbued with rich metrics that can be useful initial candidates for fitness functions{\ldots}(where) fitness is computed directly in terms of the engineering artifact, without the need for the simulation and modeling inherent in all {\em other approaches}.''
-\end{quote}
-By  ``other approaches'', Harman et al. refer to optimizers that demand detailed knowledge  about  the internals of a system. 
-For example, gradient descent optimizers~\cite{saltelli00} require that models contain only differential functions (i.e. functions of real-valued variables whose derivative exists at each point in its domain).
-This is impractical  for  software systems since, often, they manipulate symbols as well as numbers.
-Also the  internal state space of software is usually not a smoothly differential continuous function.
-Rather, software contains many regions with many different properties (each ``if'' statement in a software system can divide the internal state space of a program into multiple regions, each of which can have very different properties~\cite{lowrey98}).
+To avoid the problem of magic weights, a multi-objective optimizer tries to produce the space of candidates that would be generated across all possible values of the magic weights.
+Multi-objective evolutionary algorithms such as GALE, NSGA-II, SPEA2, IBEA, PSO, DE, MOEA/D, etc~\cite{deb00afast,zit02,Zitzler04indicator-basedselection,Poli07particleswarm,585892,zhang07}, try to push a cloud of solutions towards an outer envelope of ``better'' candidates.
+These algorithms eschew the idea of single solutions, preferring instead to use the {\em domination function} (discussed below) to map out the terrain of all useful candidates.
 
-Another reason to prefer this ``black box'' MOEA approach is that often we may know  very little about the internal details of software.
+Generating a cloud of candidates may  be computationally
+expensive. 
+Suppose we divide 
+the space of all functions  $f$ into subsets
+$j \in f$,  $l \in f$. 
+Let the  $j$ models be  very small and very  fast to execute.
+The   evaluation cost $C$  of $j \in f$  is negligible
+and do not recommend GALE for these $C(j)=0$ models.
+
+However for the larger models $l$, these many be 
+prohibitively expensive to run
+(particularly when
+an optimizer must perform thousands to millions of evaluations).
+Most optimizers (but not GALE) evaluate all $N$ candidates
+and compare them $N^2$ times. GALE, on the other hand,
+only evaluates and compares $2log_2(N)$ models. Hence,
+we strongly
+recommend  learners like GALE for these $C(j)>>0$ models.
+
+When choosing an optimiser, it is useful
+ to consider what information
+an optimizer can access about the function $f$. 
+For example, gradient descent optimizers~\cite{saltelli00} need to  access the contours around every decision.
+This limits the kinds of functions they can process
+to those with continuous differential functions (i.e. functions of real-valued variables whose derivative exists at each point in its domain).
+Note that, when optimizing  software systems, these internal details may not
+accessible. 
 Ever since Parnas' 1972 paper ``On the Criteria To Be Used in Decomposing Systems into Modules''~\cite{parnas72}, software engineers have designed their systems as ``modules'' where software's internal details are ``hidden'' within interface boundaries.  
 This concept of modularity is one of the cornerstones of modern software engineering since, in such modular systems (1)~engineers are free to fix and enhance the internal details of software just as long as they maintain the same interface;
 (2)~engineers can use the services of other systems by connecting to its interface {\em without} needing to understand the internal details.
+We call this class
+of  problems {\em black-box} or {\em functional} optimization.
 
-Hence, the classic software MOEA problem contains:\be
-\item
- A system that executes, but we may not fully understand all its internal details;
-\item
-Inputs represented as a flat vector of decisions;
-\item And (1+2) together can 
-generate many outputs, which can be assessed by a
-fitness function.
-\ee
-GALE was designed to support this classic MOEA problem---with one additional requirement discussed in the introduction (some systems are too slow to allow too many evaluations; if users are to certify the correctness of the conclusions, then we need to present them with a very limited number of example for their inspection):
-\begin{enumerate}
-\setcounter{enumi}{3}
-\item Optimization needs very few system evaluations.
-\end{enumerate}
-As an aside, we note that elsewhere, we have applied MOEA to other kinds of software systems that make changes to some of the above assumptions. 
-For example, Sayyad, Menzies et al.~\cite{sayyad13a,sayyad13b} adapted MOEA to systems containing hierarchical  constraints, for which we have  100\% knowledge of the internal structure.
-In that work, that structural knowledge was exploited via {\em push} and {\em pull} strategies that use decisions made in one part of a system to reduce the search space in other parts of the same system. 
-Note that for the ``black box'' systems described in a classic software MOEA problem, such {\em push,pull} strategies cannot be applied (since the internal structure of the software is unknown).
-\end{changed}
+Harman et al.~\cite{harman12abc} argue that when optimizing
+software systems, a functional approach is very useful:
+\begin{quote}
+``{\ldots}the virtual nature of software makes it well suited for (search-based optimization). The field of SE is imbued with rich metrics that can be useful initial candidates for fitness functions{\ldots}(where) fitness is computed directly in terms of the engineering artifact, without the need for the simulation and modeling inherent in all {\em other approaches}.''
+\end{quote}
+By  ``other approaches'', Harman et al. refer to optimizers that demand detailed knowledge  about  the internals of a system
+such as gradient descent optimizers.
+Another example of this ``other approach'' was explored by
+Sayyad, Menzies et al.~\cite{sayyad13a,sayyad13b}.
+In that work,
+multi-objective optimization was applied  systems containing hierarchical  constraints, for which the analysis could access  100\% knowledge of the internal structure.
+That structural knowledge was exploited via {\em push} and {\em pull} strategies that use decisions made in one part of a system to reduce the search space in other parts of the same system. 
+
+In order to distinguish this ``other approach''
+we call these kind of problems {\em white box} or {\em structural}
+optimization. In our opinion, based
+on a reading of the current literature, functional
+optimization is more widely-applicable hence more widely-used than structural optimization.
+ 
+
+
+
+  
+\subsection{Search-based SE = MOEA + SE}\label{sec:abutsbse}\label{sec:w}
+
+Evolutionary optimizers explore {\em populations} of candidate solutions.
+In each {\em generation} some {\em mutator} makes changes to the current population. 
+A {\em select} operator then picks the best mutants which are then {\em combined} in some manner to become generation $i+1$.
+This century, there has been much new work on multi-objective evolutionary algorithms (MOEA) with 2 or 3 objectives (as well as many-objective optimization, with many more objectives).    
+
+Recently, there has been much interest in applying MOEAs to many areas of software engineering including requirements engineering, test case planning, software process planning, etc. 
+This {\em search-based software engineering} is a  rapidly expanding area of research and a full survey of that work is beyond the scope of this paper (for extensive notes on this topic, see~\cite{harman12abc,harman14}). 
+
+ 
 
 \subsection{MOEA and Domination}\label{sec:cdom}
 
@@ -461,7 +506,7 @@ solution $y$ if solution $x$'s objectives are never worse than solution $y$ and 
  $\left\{ \forall o  \in \textit{objectives}\;\mid\; \neg ( x_o \prec y_o )\right\}$
 and
  $\left\{
-\exists o \in \text{objectives} \;\mid\; x_o \succ y_o\right\}$, where ($\prec,\succ$) tests if $x_o$ is (worse,better) than $y_o$.
+\exists o \in \text{objectives} \;\mid\; where ($\prec,\succ$) tests if $x_o$ is (worse,better) than $y_o$.
 Recently, Sayyad~\cite{sayyad13a} studied binary domination for MOEA with 2,3,4 or 5 objectives.  
 Binary domination performed as well as anything else for 2-objective problems but very few good solutions were found for the 3,4,5-goal problems.  
 The reason was simple: binary domination  only returns {\em \{true,false\}}, no matter the difference between $x_1,x_2$. 
@@ -511,11 +556,11 @@ There are other kinds of MOEA algorithms including the following (the following 
 {\em SPEA2}: favors solutions that dominate the most number of other solutions that are not nearby (to break ties, it uses density sampling)~\cite{zit02}; 
 \item {\em  IBEA}: uses continuous dominance to find the solutions that dominate all others~\cite{Zitzler04indicator-basedselection}; 
 \item In {\em Particle swarm optimization}, a ``particle'''s velocity is 
-``pulled' towards the individual and the community's best current solution~\cite{pan08,V.Sedenka2010,Kennedy:2001:SI:370449,Poli07particleswarm};
+``pulled' towards the individual and the community's best current solution~\cite{pan08,V.Sedenka2010,Kennedy:2001:SI:370449,Poli07particleswarm,Coello04,Reyes-sierra06};
 \item 
 The {\em many-objective optimizers}  designed for very high numbers of objectives~\cite{deb14}; 
 \item
-Multi-objective {\em differential evolution}: members of the frontier compete (and are possibly replaced) by candidates generated via extrapolation among  any three other members of the frontier~\cite{storn97,5601760};
+Multi-objective {\em differential evolution}: members of the frontier compete (and are possibly replaced) by candidates generated via extrapolation among  any three other members of the frontier~\cite{storn97,5601760,abbass01};
 \item
 The {\em decomposition methods} discussed below.
 \ei 
@@ -940,27 +985,11 @@ def improved(old,new):
 \section{Models Used in This Study}\label{sec:models}
 Having described general details on MOEA, and the particular details of our approach, we turn now to the models used to evaluate GALE.
 With one exception, all these  are available to other researchers via the websites mentioned in \tion{avail}. 
-The exception is the CDA model since that requires extensive connection to proprietary NASA hardware and software.
 
-The XOMO model~\cite{me07f,me09a,me09e} combines four software process models from Boehm’s group at the University of Southern California.
-It reports four-objective scores (which we will try to minimize): project {\em risk}; development {\em effort} and {\em defects}; and total {\em months} of development.
-
-The POM3 model~\cite{port08,me09j}  implements the Boehm and Turner model~\cite{port08,1204376,turner03} of agile programming where teams select tasks as they appear in the scrum backlog.
-POM3 studies the implications of different ways to adjust task lists in the face of shifting priorities.
-
-
-
-The CDA model~\cite{Kim2011,Pritchett2011,Feigh2012,Kim2013,Pritchett2013,krall15:hms} lets an engineer explore the implications of how software presents an airplane's status to a pilot in safety critical situations. 
-CDA models how pilots interact with cockpit avionics software during a continuous descent approach.
-
-Apart from the above three models, we also explore numerous small maths models that are often used to benchmark MOEA problems 
-These models are called BNH, Golinski, Srinivas, Two-bar Truss, Viennet2, Water, ZDT(1,2,3,4 and 6), and DTLZ(1,2,3,4,5 and 6).
-The  DTLZ suite of models is particularly useful for evaluation of MOEAs since, by adjusting certain model  parameters, it is possible to generate problems with a wide range of decisions and objectives~\cite{Zitzler2000zdtpaper,dtlz2001a}.
-
-For more details on these models, see the text below.
-For full details on the maths models, see the appendix (\fig{uncon} and \fig{con} and \fig{dtlzmodels}).
-
-
+The exception is the CDA model since that requires extensive connection to proprietary NASA hardware and software. One important feature of
+CDA takes hours to complete
+a single evaluation. Hence, it is an good example for exploring
+the advantages of  GALE's active learning.
 
 
 
@@ -1021,11 +1050,8 @@ The optimization task is to find settings for the controllables in the last colu
 
 
 
-\subsection{POM3: A Model of Agile Development}\label{sec:pom3pom3}POM is short for \underline{P}ort, \underline{O}lkov and \underline{M}enzies, and is an implementation of the Boehm and Turner model of agile programming. 
-For further details on this model see~\cite{port08,1204376,turner03} but, in brief, in agile development, teams adjust their task list according to shifting priorities.
-
-\begin{changed}
-Turner and Boehm say that the agile management challenge is to strike a balance between {\em idle rates}, {\em completion rates} and {\em overall cost}. 
+\subsection{POM3: A Model of Agile Development}\label{sec:pom3pom3} 
+According to Turner and Boehm,  the agile management challenge is to strike a balance between {\em idle rates}, {\em completion rates} and {\em overall cost}. 
 \bi
 \item
 In the agile world, projects terminate after achieving a {\em completion rate} of   $(X<100)$\% of its required tasks.
@@ -1033,31 +1059,27 @@ In the agile world, projects terminate after achieving a {\em completion rate} o
 Team members  become {\em idle} if forced to wait for a yet-to-be-finished task from other teams. 
 \item
 To lower {\em idle rate} and increase {\em completion rate}, management can hire staff--but this increases  {\em overall cost}.
-\ei
-\end{changed}
-\fig{pom3decisions}  list some of POM3's variables.
-These inputs characterize the difference between plan-based and agile-based methods:
-\bi
-\item {\em Tsize}: project size
-\item {\em Crit:} project criticality. In Boehm \& Turner's model
- {\em more} critical projects cost exponentially {\em more} 
-according to the formula: $\textit{cost} = \textit{cost} * {C_M}^{\textit{crit}}$.
-\item {\em Crit Mod:} the criticality modifier $C_m$ term.
-\item {\em Dyna:} dynamism: changes to priorities, costs.
-\item {\em Personnel}: the developer skill-level.
-\item  {\em Cult:} organizational culture. The {\em larger} this number, the {\em more} conservative
-the team and the {\em less} willing to adjust the priority of a current task-in-progress.
-\ei
-POM3 uses the following parameters to define a space of options.
-\bi
-\item {\em Size:} number of requirements.
-\item {\em Init Kn:} percent of requirements that are initially visible to the team.
-\item {\em Plan:} the planning method used to select the next requirement to implement.
-\item {\em Inter-D:}  the percent of requirements that have inter-dependencies 
-between requirements in other trees.
-\ei
+\ei 
 
-  Within this model, POM3 represents requirements as a set of trees.  
+
+The POM3 model~\cite{port08,1204376}  is a tool
+for exploring that management challenge.
+POM3 implements the Boehm and Turner model of agile programming~\cite{turner03} where teams select tasks as they appear in the scrum backlog. POM3 can  studu the implications of different ways to adjust task lists in the face of shifting priorities.
+
+
+
+
+In this study, our optimizers tune the 
+POM3  decisions of \fig{pom3decisions} in order to
+\bi
+\item Increase completion rates;
+\item Reduce idle rates;
+\item Reduce overall cost.
+\ei
+For further details on this model see~\cite{port08,1204376,turner03}. A summary
+of that model is shown below.
+
+ POM3 represents requirements as a set of trees.  
     Each tree of the requirements
     heap represents a group of requirements wherein a single node of the
     tree represents a single requirement.  A single requirement consists
@@ -1146,14 +1168,24 @@ GALE appears to out-perform NSGA-II and SPEA2.
 
 \subsection{CDA: An Aviation Safety Model}\label{sec:cda}
 
-The CDA continuous descent model is used for the model-based design of cockpit avionics software~\cite{Kim2011,Pritchett2011,Feigh2012,Kim2013,Pritchett2013}.
+The CDA model~\cite{Kim2011,Pritchett2011,Feigh2012,Kim2013,Pritchett2013,krall15:hms} lets an engineer explore the implications of how software presents an airplane's status to a pilot in safety critical situations. 
+CDA models how pilots interact with cockpit avionics software during a continuous descent approach.
 Internally, CDA models the physical aerodynamics of an aircraft's flight, the surrounding environment (e.g. winds), and the cognitive models and workload of the pilots, controllers and computers.
-For this paper, we run CDA to  minimize:
+
+For this study, our optimizers tune the following decision variables:
+\bi
+\item {\bf HTM}: maximum human task load. This value describes how many tasks (where a task is an atomic action) can be maintained in a mental to-do list by a person.  When the number of necessary tasks exceeds the number of tasks that the person can maintain, there can be incurred delays, errors, or the possibility of the task being forgotten and lost.
+\item {\bf FA:} function allocation. This variable refers mainly to the relative authority between the human pilot and the avionics.
+\item {\bf CCM:} contextual control mode of pilots. These describe the pilots’ ability to apply patterns of activity in response to the demands and resources in the environment.
+\item {\bf SC:}
+The air environment scenario. WMC’s CDA model includes four different arrival and approach scenarios.
+\ei
+These decisions were tuned in order to {\em reduce} all the following objectives:
 \be
-\item
+\item  
 \emph{NumForgottenActions}:
 tasks forgotten by the pilot;
-\item
+\item 
 {\em NumDelayedActions}: number of delayed actions;
 \item
  \emph{NumInterruptedActions}: 
@@ -1169,6 +1201,15 @@ This paper   uses CDA as a large and complex model
 to comparatively evaluate  GALE vs NSGA-II vs SPEA2.
 Elsewhere~\cite{krall15:hms}, we offer an extensive discussion of the theory behind the CDA model
 and the cognitive implications of the decisions made by GALE. 
+
+\subsection{Maths Models}
+
+Apart from the above three models, we also explore numerous small maths models that are often used to benchmark MOEA problems 
+These models are called BNH, Golinski, Srinivas, Two-bar Truss, Viennet2, Water, ZDT(1,2,3,4 and 6), and DTLZ(1,2,3,4,5 and 6).
+The  DTLZ suite of models is particularly useful for evaluation of MOEAs since, by adjusting certain model  parameters, it is possible to generate problems with a wide range of decisions and objectives~\cite{Zitzler2000zdtpaper,dtlz2001a}.
+
+For full  details on the maths models, including their decisions
+and objectives, see the  appendix and \fig{uncon}, \fig{con}, \fig{dtlzmodels}.
 
 
 % The model of primary interest in this paper is a case study on agile software
@@ -1196,8 +1237,20 @@ One important criteria for selecting those existing approaches is
 Many of the algorithms described above such as MOEA/D and PSO
 are really {\em frameworks} within which an engineer has free reign to make numerous decisions
 (hence, 
-review papers list dozens of variants on  PSO and MOEA/D ~\cite{V.Sedenka2010,5601760}).
+review papers list dozens of variants on  PSO and MOEA/D ~\cite{5601760,Poli07particleswarm}).
 Hence, in terms of {\em repeatability}, it can better to use precisely defined algorithms like NSGA-II and SPEA2 rather than framework algorithms such as PSO and MOEA/D.
+
+New MOEA  algorithms are being invented all the time.
+Late in the development of this project, the authors became
+aware of a new version of NSGA-II which, according to its
+authors~\cite{6600851} performed better for large number of objectives.
+The merits of this new approach is still be assessed and some
+results suggest that, in terms of improving objectives, it is not necessary a superior approach~\cite{sato14}. That said, we know of no similar work
+in the SBSE literature that claims any like GALE's large scale
+reductions in the number
+of evaluations.
+
+ 
 
 Comparison algorithms should also be {\em appropriate to task}.  
 For example, Sayyad, Menzies et al.'s {\em push,pull} IBEA
@@ -1411,7 +1464,7 @@ a 2 GHz Intel Core i7 MacBook Air, with 8GB of 1600 MHz DDR3 memory.
 \begin{figure}[!b]
 %\includegraphics[width=3.5in]{tim/runGale.png}
 \begin{center}
-\includegraphics[width=2.25in]{barcharts_runtime_galeAbsolute_v2.png}
+\includegraphics[width=3in]{barcharts_runtime_galeAbsolute_v2.png}
 \end{center}
 \caption{GALE, mean runtime in seconds.}\label{fig:runGale} 
 \end{figure}
@@ -1429,7 +1482,7 @@ with SPEA2, ZDT1 ran 1.5 times slower than GALE.}\label{fig:runSpea2}
 
 \begin{figure}[!b]
 %\includegraphics[width=3.5in]{tim/evals.png}
-\includegraphics[width=3in]{barcharts_numeval_v2.png}
+\includegraphics[width=3.5in]{barcharts_numeval_v2.png}
 \caption{Number of evaluations (means over all runs), sorted
 by  max. number of evaluations.}\label{fig:evals} 
 \end{figure}
@@ -1921,9 +1974,21 @@ better (and note that the generality of this claim is explored futher in \tion{o
 
 
 \subsection{Optimizer Bias}\label{sec:ob}
-While we have shown that GALE does better than NSGA-II and SPEA2, we have not shown
-that it works better than {\em all} optimizers. Hence, one source of bias in this
-study is the selection of comparison algorithms.
+Our reading of 
+the 
+literature
+is that this the experimentation is this paper is far larger than
+what is typically used
+to certify new optimizers.  
+Also, we know of no other search-based
+SE paper that can achieve GALE's results using so few evaluations.
+
+That said, the applicability of GALE to new models is an open question. We have shown that GALE does better than NSGA-II and SPEA2, for the models
+ explored above. This is not to say that we we have not shown
+that it works better than {\em all} optimizers over {\em all} data sets. 
+ 
+There are theoretical reasons to conclude that it impossible
+to show that any one optimizer  {\em always} performs best.
 Wolpert and Macready~\cite{wolpert97} showed in 1997
 that no optimizers necessarily work better than any
 other for all possible optimization
@@ -1931,18 +1996,32 @@ problems\footnote{``The computational
   cost of finding a solution, averaged over all
   problems in the class, is the same for any
   solution method.  No solution therefore offers a
-  short cut.''~\cite{wolpert97}}. Hence, when this paper claims that
-GALE works comparatively well, we  stress that this conclusion 
-is based on the study that applies a few optimizers to the
+  short cut.''~\cite{wolpert97}}. 
+
+In the end, it is just honest to say that our conclusions 
+are based on the study that applies a few optimizers to the
 22 models explored by GALE in Krall's Ph.D. thesis~\cite{krall14f}
-and the 43 models explored later in this paper.
-All that is achievable in one study is a limited comparison between select optimizers. 
-In this work, GALE was compared to 
-NSGA-II and SPEA2. Our reasons for
-selecting these two were discussed in
-\tion{compares}.  Future work should compare GALE to other optimizers.
-That said, GALE is a stand-out result in that we know of no other search-based
-SE paper that can achieve GALE's results using so few evaluations.
+and the 43 models explored later in this paper. For the record these
+are:
+\bi
+\item Small maths problems such as those offered in the appendix;
+\item Larger software process models (XOMO and POM);
+\item Very large cognitive models in situations were
+computers mediate the control surfaces explored by people (CDA).
+\ei
+At least for these kinds of models, we would recommend GALE.
+Also, harking back to \tion{optz}, we would also strongly
+endorse GALE for models where:
+\bi
+\item
+The cost of evaluating thousands
+(or more)
+candidates is prohibitively high;
+\item
+And the task at hand is functional optimization, which  \tion{optz}
+defined as the optimization of models {\em without}  knowledge
+of their internal structure.
+\ei
 
 
 
@@ -1953,6 +2032,23 @@ analysis of a finite number of optimization
 problems.  Hence, even though GALE runs well on
 the models studied here, there may well be other
 models that could defeat GALE.  
+
+It is very hard to find a representative
+sample of models that covers {\em all} kinds of models.
+Over the last few decades, there have been many serious attempts
+to partition models into different classes, then comment
+on how those classes change the complexity of reasoning about those models~\cite{Michie94,Cheeseman91}. To that end, many repositories
+now offer instance generators that re-express their model contents
+in some canonical form, them offer a service where they can generate
+large numbers of mutations of that form. For example, the SPLOT
+web site that stores product line models in conjunctive normal form (see goo.gl/n9yZTJ). From that site, researchers can download a tool
+that auto-generate a large number of models  with different branching
+factors, number of leave features, etc. In this way, it is possible
+to generate many similar examples of a particular kind of
+model. Unfortunately,  even
+when models are as precisely defined as at SPLOT, the variance
+in the effort required for their optimization   is  very large~\cite{Hoos02}.
+ 
 
 For this issue of sampling bias, the best we can do
 is define our methods and publicize our tools so
@@ -2029,16 +2125,6 @@ faster find best solutions across that space since
 it understands and exploits the shape of the Pareto
 frontier.
 
-
-These results suggest that it is perhaps time to reconsider the random
-mutation policy used by most MOEAs.  GALE can navigate the space of
-options using far fewer evaluations than the random mutations of
-NSGA-II and SPEA2. We would propose a ``look before you leap'' policy;
-i.e. before applying some MOEA like SPEA2 or NSGA-II, cluster the
-known solutions and look for mutation directions in the non-dominated
-clusters.
-
-   
 
 
 \section*{Acknowledgements}
@@ -2392,885 +2478,5 @@ http://ti.arc.nasa.gov/profile/mdavies/papers.
 
 
 
-\clearpage
- \setcounter{page}{1}
-\pagenumbering{Roman}
-\section*{Reply to Reviewers}
-\subsection*{Comments from the Associate Editor}
-
- I am recommending a major revision.  However please note that if you choose to submit a major revision, these changes must be made to the satisfaction of the reviewers in your next submission as we don't normally have two consecutive major revision decisions -- and I certainly can't recommend this a third time.
-\begin{changed}
-Thank you for the opportunity to resubmit. 
-This draft makes the changes you indicated in the last review.
-Please note that in this draft, all the changed material is shown in BLUE.
-
-The current draft is not short and, if you want,
-there is a way to reduce the size-- drop the three
-tables ``maths models'' shown in the appendix. These
-are well-documented in other publications.  Please
-advise: drop or keep?
-\end{changed}
-
-The reviewers have recognized the efforts you've made but still raise some important concerns.  In particular could you please address the following.
-
-
-1) Why did you not perform a comparison against your own previous work in ASE13/ICSE13 (IBEA) which you have shown to outperform the NSGA-II and SPEA2 baselines in this paper?   It doesn't make sense to use a lower baseline than the state of the art (especially when that is YOUR state of the art).
-
-\begin{changed}
-
-
-For more notes on our choice of comparison algorithms:
-\bi
-\item
-See \tion{compares}: in summary, while there are many multi-objective algorithms out
-there, many of these are ``frameworks'' not specific implementations.
-So on the grounds of repeatability, it is better to compare against
-NSGA-II and SPEA2 and not some generic framework like MOEA/D or PSO.
-\item As to ``why don't we use the software product line examples from
-our ASE13/ICSE13 papers?'', please see our comments in the next column.
-\ei
-
-
-\end{changed}
-
-You need to build a convincing case that this can be
-used to solve non-trivial Software Engineering
-problems.  
-\begin{changed}
-To make that point, for this draft,
-we added another SE study- based on Boehm's
-software process modeling (see the one and a half page description
-of XOMO in \tion{xomoIs}).
-
-
-As for the ``non-trivial'' nature of our existing models,
-please look at the following sections (the new text written in blue):
-\bi
-\item
-The complexity of software requirements engineering in the context
-of the large simulators in CDA is now defined more in \tion{cda}.
-Note that our NASA colleagues requested us to work on CDA
-since all their conventional methods were too slow and cumbersome (which is
-evidence for the notion that GALE addresses an issue that is of
-vital concern to some users of software).
-\item
-The ever-present ``magic weights'' problem is discussed in \tion{w};
-\item
-The problem of reasoning over agile systems is stressed in \tion{pom3pom3};
-\ei
-
-Not only that, but one of the authors (Krall)
-spent months working on-site at NASA Ames Research Center to assemble the CDA model (in source,
-the CDA model was not commissioned to be directly optimized nor was it clear which parameters could
-or should be optimized).  This emphasizes another important part of SBSE: models must first be commissioned
-so that inputs can be mapped to outputs (via evaluation).  For trivial models, this task would be simple, but
-clearly, several months spent in commissioning is not a trivial matter.
-\end{changed}
-
-Similar to point \#1, why didn't you (for
-example) include the case studies from previous work
-in this evaluation?  
-\begin{changed}
-For notes on our choice of problem models:
-\bi
-\item
-In \tion{abutsbse} we distinguish between a  ``classic SBSE'' problem
-and certain specialized sub-types of problems. 
-We then focus this paper on the classic problem (which we say means
-``no knowledge of internal structure'').
-\item
-Further, 
-in
-\tion{compares}, we make the point that:
-the ASE/ICSE13
-papers on hierarchical software product line (SPL)
-models is a different and specialized problem to the flat vector
-decision space explored by the classic SBSE  problem solvers.
-More specifically, 
-the ``push,pull'' heuristics of the
-ASE/ICSE13 papers would be of little benefit for ``classic'' problems
-since, for this paper, we assume
-no knowledge of internal dependencies.
-\ei
-FYI- there are now graduate students at NC state
-working on meta-meta-heuristics for matching problem
-types to algorithms. This is a \underline{HUGE}
-task-- and one that will take sometime
-before we can offer anything definitive for a TSE
-article.  
-\end{changed}
-At the very least you need to
-apply your technique in a way that convinces that it
-is relevant for solving real SE problems.
-\begin{changed}
-Just as an aside- did you see Andreas Zeller's recent Facebook
-discussion on ``what is a real SE problem?''. He was complaining that
-if everything new is considered ``not SE'' then SE will become the
-place of dull problems that are already solved.
-
-(By the way, we expand a little more on these ``new SE problems'' in Question 1
-of our new ``Frequently Asked Questions'' section in \tion{faq}.)
-
-As to our applicability to ``real problems'',
-we added yet another real world model to this paper (the XOMO work).
-Also, as stated above, we explore these kinds of models
-with these kinds of tools because
-real people using real model-based software for real-world
-applications are always pleading with us to make the whole
-process really much simpler. Really.
-
-
-\end{changed}
-
-
-Please justify the quality metrics you use for evaluation purposes.
-
-\begin{changed}
-It is fair complaint to say that the prior draft did not apply
-typical multi-objective evaluation procedures.   Accordingly, this draft corrects that problem: along with Equation~1
-and number of evaluations, we also use the ``spread'' and ``hypervolume'' measures that are more standard
-in the field.
-
-
-
-
-
-\end{changed}
-
-\subsection{Reviewer 1 Comments}
-
-The paper is very well written with the proposed algorithm explained in detail and the results analyzed thoroughly.
-
-The empirical study was conducted in a comprehensive fashion; it is also a plus to have made the implementation and the datasets publicly accessible.
-\begin{changed}
-
-Thank you for those kind remarks.
-\end{changed}
-Despite the above positive points, the paper has a
-couple of shortcomings. The most noticeable one is
-that good, and surprisingly good, results are
-achieved based on only one heuristic, namely,
-splitting the solution space into equal-sized
-subsets and evaluating the farthest points in each
-subset. On one hand, the results seem empirically
-valid. On the other hand, the * why * is weak. The
-best rationale that the author provide is that GALE
-understands and exploits the shape of the Pareto
-frontier. However, how do we know the shape of the
-Pareto frontier is linear? Even if so, how do we
-know the shape can be reasonably represented by
-"east-west"? Both theoretical and empirical
-arguments are needed to offer more substantial
-insights into * why * GALE's simple heuristic works.
-
-\begin{changed}
-This is a fair comment that addresses an issue
-overlooked in the previous draft. In this draft, in
-\tion{faq} under the heading {\em Question 3}, we
-note that GALE exploits an assumption that is
-implicitly endorsed by the rest of the community,
-but not exploited directly.
-\end{changed}
-
-
-The paper also contains several grammar-related issues: listed below.
-
-\begin{changed}
-Fixed (thanks for the pointers).
-\end{changed}
-
-\subsection{Reviewer 2 Comments}
-
-
-
-
-The core contribution of this work is a novel MOEA;
-its application to two software engineering problems
-is merely incidental. As such, this work should
-really be submitted to a journal on evolutionary
-computation such as IEEE Transactions on
-Evolutionary Computation where it would get more
-expert reviews
-\begin{changed}
-We think it unfair to say that SE lacks  experts in evolutionary
-methods. For example, the associate editor managing
-this paper is one of them (and, we suspect,
-so is Reviewer 4).
-
-Also, we would say that this paper results from good software
-engineering research since
-the success
-of GALE is due more to good software engineering than
-anything else.
-As software engineers,
-the authors find an under explored area of the optimization
-software literature and built the experiments to explore
-that region.  
-So we would say that GALE is an example of K.I.S.S. and YAGNI.
-Further,  this work is less of an {\em algorithms} paper
-than an {\em engineering} paper. 
-
-
-\end{changed}
-
-
-I am not an expert in MOEA but I
-understand there has been much work in improving
-MOEA since NSGA2 and SPEA2 both published more than
-10 years ago. None of the more recent work in that
-area is referenced in the paper,
-
-\begin{changed}
-We agree-- That is a  fair criticism of the last draft. 
-
-This draft has more comments on other algorithms in 
-\tion{algo} and
-\tion{decomp}.
-\end{changed}
-
-GALE should
-really be evaluated against or at least related to
-the state-of-the-art in MOEA instead of just against
-the two mostly widely-used algorithms in SBSE.
-
-\begin{changed}
-FYI- we tried to find some generally recognized state-of-the-art
-(by emailing leading figures in the field) but we found no consensus.
-
-And your general point is well made: we needed a better
-discussion on why we used our comparison algorithms.
-That has been fixed in this draft- see  \tion{compares}.
-\end{changed}
-
- MOEA are of course of interest to software engineers
-and thus have a place in TSE ...
-
-\begin{changed}
-On this point, we completely agree.
-\end{changed}
-
-... but for a TSE paper I
-would expect the main contribution to be specific to
-software engineering, for example by showing that
-GALE can solve real SE problems faster and better
-than previous approaches or that it can solve SE
-problems that could not be solved before.
-\begin{changed}
-
-This is a
-well known issue in SBSE that has resulted in
-numerous attempts to define a set of canonical
-problems that researchers can use to benchmark their
-methods. We used some of those models in the previous draft
-and reviewer 4 pointed us to some more, and these are
-included in this draft.
-
-Now we suspect Reviewer 2 would find those
-canonical problems are too small to express
-standard business knowledge. Hence this paper explores much
-larger SE models.
-
-FYI: we spent much time considering the choice of a larger
-model that we explored.
-Some researchers explore the
-next-release planning problem but, at the advice of
-Mark Harman, we stayed away from that one since (as
-he warns) it is very hard to get accurate data on
-those kinds of problems. 
-In other work, in
-ICSE/ASE13, we explore software product lines but these are highly untypical
-of the standard SBSE problem.
-For our notes on those models, and why we did not
-use them here, see  \tion{abutsbse} 
-and
-\tion{compares}.
-
-\end{changed}
-
- This is not achieved by the paper in its current
- form. The two SE problems to which GALE is applied
- are new to this paper and due to their short
- presentations are hard to understand and validate
- as real, significant SE problems (they possibly are
- real and significant but need more explanation). 
-
-\begin{changed}
-To address these issues, this paper takes more care
-to situate the studies in an SE content (see the BLUE
-notes in the following sections):
-\bi
-\item
-Since the last draft, we added one
-more SE model to this study-- see the one and a half
-pages devoted to the XOMO software process models in \tion{xomoIs}.
-\item
-The problem of reasoning over agile systems is stressed in \tion{pom3pom3};
-\item
-The complexity of software requirements engineering in the context
-of the large simulators in CDA is now defined more in \tion{cda}.
-Note that our NASA colleagues requested us to work on CDA
-since all their conventional methods were too slow and cumbersome (which is
-evidence for the notion that GALE addresses an issue that is of
-vital concern to some users of software).
-\ei
-\end{changed}
-
-I
- would be more easily persuaded by this work if GALE
- was evaluated using previously published SBSE
- optimisation problems (for example some of the
- previous work of the second author, some
- requirements optimisation problems, or some testing
- problems). 
-\begin{changed}
-At your suggestion,
-for this draft, we have added in a case study optimizing decision making in software processes in  \tion{xomoIs}.
-
-\end{changed}
-
-Other more specific comments:
-
-I do not understand and I am not convinced by the measure of quality in Section 5.2. One technical presentation issue is that in Section 5.2, the loss function takes as arguments two *sets* of solutions (the final population and the initial population) whereas in Equation 1, the loss function takes as arguments two *individual* solutions x and y. So there appears to be a type-checking error here. 
-
-\begin{changed}
-Our mistake. We actually compare the means of the populations.
-And we added more text to explain that point in \tion{eval}.
-
-\end{changed}
-
-Some examples illustrating Equation 1 would also have been very useful to help my understanding of this loss function. More importantly, if we abstract away from the technical details, I would have liked to see some justification for using this function as a measure quality. 
-\begin{changed}
-For a detailed justification of that loss measure, there is this text in \tion{cdom}:
-
-\begin{quote}
- Recently, Sayyad~\cite{sayyad13a} studied binary domination for MOEA
-with 2,3,4 or 5 objectives.  Binary domination performed as well as anything else
-for 2-objective problems but very few good solutions were found for
-the 3,4,5-goal problems.  The reason was simple: binary domination  only returns
-{\em \{true,false\}}, no matter the difference between $x_1,x_2$. As the objective
-space gets more divided at higher dimensionality, a more nuanced approach is required.
-\end{quote}
-
-\end{changed}
-
-Comparing the solutions generated by an algorithm against those of the initial population amounts to comparing it against a random search. Is this a good way to measure quality? I believe an alternative approach used by the MOEA community is to compare the generated solutions against some reference Pareto-front where the reference Pareto front is obtained from all executions of all algorithms. 
-\begin{changed}
-Such frontiers are not available for all the complex models we explore here.
-\end{changed}
-
-Additionally, MOEA are usually evaluated not only
-by their relation to the reference pareto-front but
-also by the spread of their solutions. The
-discussion you give in the paper why standard
-measures of spread are inappropriate for GALE is not
-satisfying (or I did not understand it well enough).
-In summary, I believe the evaluation of quality
-needs better justification and possibly to be redone
-entirely.
-
-\begin{changed}
-Thanks for this remark. Now we use spread in the results section.
-\end{changed}
-
-
-
-Section 2.5 is hard to understand. It lacks
-definition and examples for most of its key
-concept. In the first paragraph, it is not clear
-what you refer to when you talk about "decisions",
-"dimensions" and "data". Figure 4a is useless
-because it does not illustrate how WHERE decides
-which car goes into what cluster. Using a simple SE
-example (e.g. a basic requirements optimisation or
-test optimisation problem) instead of a car
-selection problem would help make the description
-more relevant and comprehensible to software
-engineers.
-
-
-\begin{changed}
-At your suggestion, we have {\em considerably} simplified that section (and discarded that
-overly complex example).
-\end{changed}
-
-The sections introducing the POM3 and CDA models are
-distractions from the core contribution of the
-paper. These sections are too long if their purpose
-is to introduce models against which to evaluate
-GALE and too short to actually understand the models
-and validate them as real significant SE
-problems. Each model probably requires a separate
-full-length paper to introduce its context, present
-the decisions it is intended to support, and justify
-its equations, assumptions and choices of
-objectives.
-
-\begin{changed}
-That was our mistake. This draft does a better job of 
-recording the papers that document those models. 
-
-To be precise, each section CDA, XOMO, POM3 starts with a list
-of background papers:
-
-\bi
-\item POM3: \cite{port08,me09j,1204376,turner03};
-\item XOMO: \cite{me07f,me09a,me09e};
-\item CDA:  \cite{Kim2011,Pritchett2011,Feigh2012,Kim2013,Pritchett2013}.
-\ei
-\end{changed}
-
-
-\subsection{Reviewer 3 Comments}
-
-Recommendation: Author Should Prepare A Major Revision For A Second Review
-
-Comments:
-Overall I find the paper well written and focused. It seems to have gone through a major revision and improvement over the previous draft.
-\begin{changed}
-Thank you-- we spent much time on that draft, and on this one as well.
-\end{changed}
-
-My comments and concerns are more from a methodological point of view. This is the reason why marked it as a major revision. Should my concerns be properly addressed the paper would be fit for the inclusion in TSE.
-
-First, the paper compares GALE against two other commonly used MOEA's: NSGA-II and SPEA2. However, previous recent work by one of the co-authors, presented in ASE13 and ICSE13, strongly suggests that IBEA algorithm outperforms NSGA-II and SPEA2. This begs the question: Why not include IBEA in your comparison if your own previous work has shown it performs better than the other two selected algorithms?
-
-\begin{changed}
-The associate editor asked the same question. Please see our replies
-to her question, above.
-\end{changed}
-
-Second, along the same lines. In those previous
-publications, there are several case studies from
-the realm of Software Product Lines. The question
-is: Why not use also those case studies to further
-evaluate your new algorithm?
-
-
-\begin{changed}
-Please see our comments on this issue, above, in our discussion with the
-associate editor.
-\end{changed}
-In my opinion, addressing these two previous point can strenghten your results and provide a more rounded context to your GALE work.
-
-Considering the little time it takes to run GALE and the other algorithms in your models, using 20 runs seems to be too little. Usually at least 30 runs are ok, but as Arcuri and Briand suggest in [1] even more runs ought to be expected.
-
-\begin{changed}
-
-We certainly agree that most of the methods used for
-search cite their reason for performing repeats of
-the experiments: the results are based off of
-stochastic processes and it is important to rerun
-the tool for statistical validity~\cite{1334912}.
-However it is disputed as to how many repeats should
-be performed, ranging from as few as 5 and sometimes
-as high as 100 and even 1000~\cite{krall14f}.
-
-(The numbers in this sentence
-come from a lit review we started, prompted by this reviewer comment. We thank
-this reviewer for this comment since that lit review is maturing nicely and should be ready for submission, soon.
-For some preliminary notes, see~\cite{krall14f}.)
-
-Note that a statistical case can be made for {\em not} performing too many repeats~\cite{isre.2013.0480}
-(the dreaded p-Value problems).
-Pragmatically, a small sample size is desired unless
-the search can be repeated dozens of times per
-second.  While a sample size of 1 to 5 is
-fundamentally too small to identify any pattern or
-statistically significant differences in the data, a
-sample size of 10 may still be questionable, but
-from personal findings, a sample size of 20 seems to
-be no different than a sample size of 50.  Hence, a
-sample size of 20 is a good medium between too-small
-and too-large.
-
-
-\end{changed}
-
-Also based on [1], there is no report of effect size measures such as A12 which are fundamental when comparing search based techniques.
-
-\begin{changed}
-Thank you for that comment: this draft makes extensive use of A12.
-\end{changed}
-
-Regarding your evaluation. You measure the improvement from an initial randomly-generated population to the final frontier as you called it. My question here is: Do the evaluation of all algorithms start from the same initial population(s)? I cannot tell from the text. If not, then, is it a fair comparison if they start from a different population?
-
-\begin{changed}
-Thank you for that comment: you are correct- all our experiments start from the same initial population
-(we added a comment on that at the end of \tion{expexp}).
-\end{changed}
-
-I do not agree with the point that "it can be better
-to study GALE's spread visually rather than
-...". Visualizations can be complementary to the
-proper math analysis but not a substitute. I
-strongly suggest that the evaluation/analysis is
-made both ways, mathematically and visually, if you
-claim that a visualization can help to illustrate
-your point.
-Regarding the other quality indications (HV and GD). Sure there is no perfect measure, all of them have both pros and cons. However, I fail to see any strong reason why you chose not use them as complementary measures to assess your algorithm.
-
-\begin{changed}
-We quite take your point. This draft now uses hypervolume and spread.
-\end{changed}
-
-Minor comments:
-
-* The values depicted in Figure 4 are not clear what they mean. Are they values from an independent variable?
-
-
-\begin{changed}
-That figure has been dropped since several reviewers had issues with it.
-\end{changed}
-
-* Perhaps I am misunderstanding something. But in Figure 18 for the ZDT1 model, you have highlighted both GALE and SPEA2 with values 80\% and 82\% respectively. But shouldn't these values be equal or just one of them being highlighted?
-
-\begin{changed}
-On that row, in the last draft,
-only the 87\% is significantly different to the other numbers.
-
-And, when we re-ran the experiments and the stats for this draft, that effect
-went away (but the main effect remained; i.e. GALE usually found most improvement).
-\end{changed}
-
-\subsection{Reviewer 4 Comments}
-
-Recommendation: Author Should Prepare A Major Revision For A Second Review
-
-Comments:
-This is a good paper in general, but there are a few loose ends that need to be tightened. Some are more major than others. I hope they are of some use to the authors in revising their work.
-
-
-\begin{changed}
-Thank you for those comments.
-\end{changed}
-
-"When MOEAs explore too many options, they are slow to use and hard to
-comprehend." This is very vague and is true for almost any search
-algorithms, not specific to MOEAs. Please revise.
-
-
-
-\begin{changed}
-You are correct. We changed that, as per your comment, to ``automatic tools''.
-\end{changed}
-
-
-"Given cloud computing,..." I don't think you have to use cloud
-computing to exploit the benefits from SBSE. The advancement in more
-efficient algorithms can be more important than the availability of raw
-computing speed.
-
-
-\begin{changed}
-You are correct. We changed that, as per your comment, to ``Given recent advances in computing hardware..''
-\end{changed}
-
-I don't think Figure 1 and the following sentence, "For example, Figure
-1 shows an SBSE tool that has rejected thousands of less-than-optimal
-solutions (shown in red) to find a smaller number of better solutions
-(shown in green).", add much to the paper. They should be removed.
-
-
-\begin{changed}
-You are correct. We deleted that figure and its associated text-- and the paper's introduction is now much better for it.
-\end{changed}
-
- The 3rd paragraph in Introduction (page 1): The paragraph
-does not look very rigorous. The
-point it wants to make can be made in a sentence or two. I would suggest
-deleting the paragraph and replace it by a couple of sentences only.
-
-
-\begin{changed}
-You are correct. Once again, ``less is more''.
-We deleted that para-- and introduction is better for it.
-\end{changed}
-
-I'm not sure of the sentence "One standard method to reduce the
-space of solutions is to find the Pareto frontier ..." Pareto fronts are
-usually used to explore trade-off among conflicting objectives, not
-reducing the search space.
-
-
-\begin{changed}
-Good point. We changed that to 
-``One way to simplify the task of understanding these
-algorithms is to focus on the {\em Pareto frontier}.''
-\end{changed}
-
-This sentence needs revision: "GALE is an evolutionary learner where
-solutions in the next generation are mutations of the previous
-generation." because the next generated is always mutated from the
-previous generation for all evolutionary algorithms, let alone MOEAs. The
-sentence does not really explain the novelty of GALE precisely and
-clearly.
-
-\begin{changed}
-Good point. We removed that text. Now the intro has a very clear and short
-dot list describing GALE.
-\end{changed}
-
-
-The two research questions towards the end of Section 1 need some
-refining, proably with one or two supplementary questions. As we known,
-there is no free lunch in search. One should not expect a clear yes/no
-answer to these two questions. In this case, it's essential to understand
-{\em when} the answer would be yes/no. In other words, it's essential to
-understand for which type(s) of SE problems GALE is faster/better. Without
-bringing the SE problems into the research questions, we run the risk of
-drawing biased conclusions that may not always be true.
-
-
-\begin{changed}
-Good point. We handled that with some clarification answers to a ``Frequently
-Asked Questions'' section on page2. Please check our ``Question2'': does it
-address the issue you raise above?
-\end{changed}
-
-In Section 2.1, the authors gave Figure 2 to summarize the related work,
-I don't find this useful or satisfactory, because it missed a lot of
-important work, both more recent and old papers, on MOEAs for SE.
-
-
-\begin{changed}
-Good point. We removed that table and instead referenced the reader 
-to recent survey articles~\cite{harman12abc,harman14}.
-\end{changed}
-
-Overall, I'm unsure Section 2.1 is really needed for this paper. It
-talked very generically about SBSE, while the focus of this paper is on
-MOEAs and their applications to SE. I think the paper would be sharper
-without the distraction of Section 2.1.
-
-
-\begin{changed}
-Good point. We removed that section, started with MOEAs (but we
-did a subsequent section \tion{abutsbse} about SBSE since other reviewers
-wanted to understand why we explored these problems ant not others.
-\end{changed}
-
-In comparison to Section 2.1, Section 2.2 on MOEAs is too thin. There
-should be a better overview of different MOEAs for SE, since this is the
-topic of this paper.
-
-
-\begin{changed}
-Good point. Please check \tion{abutsbse}
-and \tion{algo} and \tion{decomp}.
-
-Now, we suspect that you will have issues of the brevity of those sections
-but please be aware of how {\em long} this paper is. After much writing
-and rewriting, we elected to put fewer introductory details into the start
-so we can do more experiments at the end. 
-\end{changed}
-
-Given the discussion in the first paragraph of Section 2.3, the authors
-might want to consult the literature about $\epsilon$-dominance.
-
-
-\begin{changed}
-EXCELLENT POINT!!!  Spot on. Important related work. Please see  \tion{decomp}.
-
-\end{changed}
-
-Two major performance measures used by MOEA researchers are convergence
-(to the Pareto front) and diversity among non-dominated solutions. It
-appears that Section 2.3 rarely mentions the diversity issue explicitly
-when discussing MOEAs. Only convergence was emphasised. Any particular
-reasons? I thought diversity is very important to software managers in
-understanding different trade-off.
-
-
-\begin{changed}
-EXCELLENT POINT!!!  We have explored spread extensively in this draft.
-And what we discovered was that GALE does {\em very well} on spread.
-
-So thanks for that comment.
-\end{changed}
-
-
-In section 2.4: "These models allow for an extrapolation between known
-members of the population." I guess the authors might mean
-"interpolation"?
-\begin{changed}
-Good point. We changed that to  ``These models allow
-for an extrapolation from \ADD{known members of the
-population to new and novel members}.''
-\end{changed}
-
-I like the idea described in Section 2.4 (and [4]) very much.
-It would be nice to point out explicitly the assumptions implied by such
-approximation.
-
-
-\begin{changed}
-Good point. For a discussion on those assumptions,
-see the end of {\textsection}2.7.
-
-Actually, this was another spot-on comment. It turns out that those
-assumptions are critical to the success of GALE.
-\end{changed}
-
-Unsure why Section 2.5 included so much details while Sections 2.3 and
-2.4 did not. Was it because the novelty claims by this paper were built on
-spectral learning?
-
-\begin{changed}
-Good point. We have reduced the complexity of that section.
-\end{changed}
-
-
-After reading through GALE in detail, as described by Section 3, I'm
-very keen on knowing the diversity of the solutions found by GALE in
-comparison to other MOEAs.
-
-
-\begin{changed}
-At your most excellent suggestion, this draft explores spread extensively.
-\end{changed}
-
-In Section 4.2.1, the benchmark functions used are considered to be
-obsolete by the MOEA community because they are unable to reveal fully
-different features of different MOEAs. The better and more recent ones are
-the DTLZ and WFG benchmark sets.
-
-
-\begin{changed}
-Good point. We dumped many of the older models (e.g. Schaffer, which is clearly
-obsolete) and made extensive studies on DTLZ. 
-
-And the DTLZ results were very positive- see figure 15 and 16. GALE does much
-better as the number of objectives and decisions goes up. Very nice result.
-\end{changed}
-
-The discussion on Page 11 of comparing NSGA-II and GALE can be misleading
-because it looked at one or two objectives only in comparing NSGA-II and
-GALE without comparing other objectives for this many objective
-optimization problem. When comparing two MOEAs, we should use the dominance
-relatoinship over all objectives, rather than looking at only a subset of
-the objectives.
-\begin{changed}
-Good point and we concur. This draft dumps that discussion. And
-we do a better job of studying our effectiveness across multiple objectives.
-\end{changed}
-
-In Section 5.3, I'm unsure of the answer to RQ2. The quality here seems
-to mean Equation (1). There are two issues here: (a) If the metric of
-Equation (1) is all that's important and compared against, one could
-actually use a single objective algorithm to optimise Eq.(1) directly. (b)
-For MOEAs, the comparisons should be based on the dominance relatoinship
-over all objectives, rather than looking at only a subset of the
-objectives. Otherwise the conclusions drawn are likely to be misleading or
-flawed.
-\begin{changed}
-Good point and we concur. As shown in {\textsection}6, we evaluate on many objectives
-now using composite measures such as spread and hypervolume.
-\end{changed}
-
-
-The MOEA community has already
-developed better benchmark functions, e.g., DTLZ and WFG sets, in order to
-evaluate how different MOEAs behave on different problems. Why not use
-these benchmark problems to evaluate GALE, just like other MOEA developers
-would do for their newly invented MOEAs?
-
-\begin{changed}
-We concur. We now use DTLZ extensively.
-\end{changed}
-
-
-The discussion in Section 6.4 confirmed my guess that GALE emphasizes
-convergence to the pareto front only, but does not consider even
-distribution of solutions, i.e., spread (or diversity). This indicates
-that GALE has a different design goal from other MOEAs, which must
-consider both convergence and diversity. As a result, it's unclear to me
-that this paper is carrying out a fair comparison.
-
-
-\begin{changed}
-We concur. Now we make more use of spread and hypervolume.
-\end{changed}
-
-I'm a little confused by Figure 20. There are six red stars by GALE, four
-of which are dominated by blus triangles (from NSGA-II). The paper said that
-"... but in the y direction, it is GALE that extends further ..." However, the
-extension seems to go towards the worse direction. I seem to have missed
-something here. Some clarifications would be nice.
-
-
-\begin{changed}
-We concur. Now we make more use of spread and hypervolume.
-\end{changed}
-
-
-Figure 21 gave a good summary of the weakness of GD and HV. However, in
-comparison with Eq . (1) used in this paper, HV would be a far more
-appropriate measure for comparing MOEAs, if one is allowed to use only one
-measure, as pointed out by existing MOEA literature. There are near linear
-time algorithms for approximating HV effectively and efficiently.
-
-
-\begin{changed}
-We concur. Figure dumped.
-\end{changed}
-
-The conclusions drawn in Section 7 seem to be too strong and general, not
-supported by the experimental studies in the paper. (a) The paper
-emphasized GALE's approximation to the Pareto front. Unfortunately, this
-was poorly done because GALE found only a few points, which could hardly
-represent an approximate front. I appreciate that this is by design and
-controlled by the "enough" parameter. The paper needs to have evidences to
-show that GALE's solutions are approximating a front, not a few points
-only. 
-
-
-\begin{changed}
-We concur- the previous draft was not good on this point.
-
-What we say now (in the intro and conclusion is that)...
-\begin{quote}
-GALE’s truncated search explores a somewhat
-smaller hypervolume of solutions than other optimizers.
-Yet within that smaller volume, GALE’s careful directed
-search is more spread out than other methods. More
-importantly, on inspection of the raw objective scores,
-we often find better results with GALE than with other
-optimizers.
-\end{quote}
-Note that this conclusion would have been IMPOSSIBLE without you
-pinging us to study spread. So thank you for that.
-\end{changed}
-
-It is very hard to understand (due to my limited knowledge) why an
-MOEA should ignore diversity (i.e., spread in this paper) and focus on
-convergence only, because this will lead to a non-dominated set that's
-very unevenly distributed over different trade-offs. It seems to be
-contraditory to the fundamental motivaions behind MOEAs. (b) When GALE
-used two extreme points (poles) to approximate a part of the Pareto front,
-isn't there an assumption that the real underlying Pareto front is smooth
-between the two poles? It would be interesting to use benchmark functions
-with non-smooth Pareto fronts to evaluate GALE. Some of the DTLZ and WFG
-functions would be very useful for this, especially the authors claimed
-"that GALEs superior performance is due to its better understanding of the
-shape of Pareto frontier." This is currently not supported by factual
-evidences in the paper.
-\begin{changed}
-Once again: spot on. The previous draft could not support that conclusion.
-
-However,
-we think that the new results on spread in this draft address this issue.
-
-But what is your view?
-\end{changed}
-
-Just as a final thought, I wonder whether a bit more emphasis on the SE side, instead of on GALE, might help to enhance the novelty and significance of the paper. However, I leave it to the authors to decide and revise the paper.
-
-\begin{changed}
-Thanks for that comment. We added another ``SE'' kind of model (the XOMO stuff in \tion{xomoIs}).
-
-Also, again at your suggestion, in this draft
-we pushed back some of the experimental detail to the back while
-pushing all the model descriptions earlier into the paper.
-\end{changed}
 
 \end{document}
