@@ -389,7 +389,7 @@ from \url{github.com/tanzairatier/jmoo} (and for the XOMO software process model
 \subsection{Optimization}\label{sec:optz}
 This paper is a comparative assessment of
 GALE with some other  {\em optimizers}.
-We  argue that GALE is the preferred choice for
+We  will argue that GALE is the preferred choice for
 {\em functional optimization} when the {\em evaluation cost}
 is very large.  
 
@@ -400,13 +400,14 @@ To start with, we say that {\em optimizers} seek  ``candidate''(s)
 Each candidate  $c_i$ is a set of decisions and their
 associated objective scores; i.e.  $c_i=(d,o)$. 
 The optimizers in this article
-assume  the existence of some fitness function $f$ that   converts {\em decisions} $d$ to
-output objectives $o$; i.e.
+assume  the existence of some fitness function $f$ that   converts {\em decisions} to
+output objectives; i.e.
 \[o = f(d)\]
-Note that this paper uses the term ``model'' as a synonym for $f$.
-
-The terms single- and multi- objective
+Note that this paper uses the term ``model'' as a synonym for the fitness function $f$.
+Also,
+the terms single- and multi- objective
 optimization apply when $\rvert o \rvert = 1$ and $\rvert o \rvert>1$, respectively.
+
 Given two candidates $x,y$:
 \bi
 \item Each with objectives $x.o_i,y.o_i$ for
@@ -424,7 +425,7 @@ objectives was explored by assigning magic weights to the objectives, then using
 Such solutions may be  brittle; i.e. they change dramatically if we alter the magic weights of the objectives.  
 
 To avoid the problem of magic weights, a multi-objective optimizer tries to produce the space of candidates that would be generated across all possible values of the magic weights.
-Multi-objective evolutionary algorithms such as GALE, NSGA-II, SPEA2, IBEA, PSO, DE, MOEA/D, etc~\cite{deb00afast,zit02,Zitzler04indicator-basedselection,Poli07particleswarm,585892,zhang07}, try to push a cloud of solutions towards an outer envelope of ``better'' candidates.
+Multi-objective evolutionary algorithms such as GALE, NSGA-II, SPEA2, IBEA, PSO, DE, MOEA/D, etc.~\cite{deb00afast,zit02,Zitzler04indicator-basedselection,Poli07particleswarm,585892,zhang07}, try to push a cloud of solutions towards an outer envelope of ``better'' candidates.
 These algorithms eschew the idea of single solutions, preferring instead to use the {\em domination function} (discussed below) to map out the terrain of all useful candidates.
 
 Generating a cloud of candidates may  be computationally
@@ -434,7 +435,7 @@ the space of all functions  $f$ into subsets
 $j \in f$,  $l \in f$. 
 Let the  $j$ models be  very small and very  fast to execute.
 The   evaluation cost $C$  of $j \in f$  is negligible
-and do not recommend GALE for these $C(j)=0$ models.
+and we do not recommend GALE for these $C(j)\approx0$ models.
 
 However for the larger models $l$, these many be 
 prohibitively expensive to run
@@ -442,9 +443,9 @@ prohibitively expensive to run
 an optimizer must perform thousands to millions of evaluations).
 Most optimizers (but not GALE) evaluate all $N$ candidates
 and compare them $N^2$ times. GALE, on the other hand,
-only evaluates and compares $2log_2(N)$ models. Hence,
+only evaluates and compares $2log_2(N)$ candidates. Hence,
 we strongly
-recommend  learners like GALE for these $C(j)>>0$ models.
+recommend  learners like GALE for these $C(l)>>0$ models.
 
 When choosing an optimiser, it is useful
  to consider what information
@@ -454,7 +455,7 @@ This limits the kinds of functions they can process
 to those with continuous differential functions (i.e. functions of real-valued variables whose derivative exists at each point in its domain).
 Note that, when optimizing  software systems, these internal details may not
 accessible. 
-Ever since Parnas' 1972 paper ``On the Criteria To Be Used in Decomposing Systems into Modules''~\cite{parnas72}, software engineers have designed their systems as ``modules'' where software's internal details are ``hidden'' within interface boundaries.  
+Ever since Parnas' 1972 paper ``On the Criteria To Be Used in Decomposing Systems into Modules''~\cite{parnas72}, software engineers have designed their systems as ``modules'' in which software's internal details are ``hidden'' within interface boundaries.  
 This concept of modularity is one of the cornerstones of modern software engineering since, in such modular systems (1)~engineers are free to fix and enhance the internal details of software just as long as they maintain the same interface;
 (2)~engineers can use the services of other systems by connecting to its interface {\em without} needing to understand the internal details.
 We call this class
@@ -470,14 +471,15 @@ such as gradient descent optimizers.
 Another example of this ``other approach'' was explored by
 Sayyad, Menzies et al.~\cite{sayyad13a,sayyad13b}.
 In that work,
-multi-objective optimization was applied  systems containing hierarchical  constraints, for which the analysis could access  100\% knowledge of the internal structure.
-That structural knowledge was exploited via {\em push} and {\em pull} strategies that use decisions made in one part of a system to reduce the search space in other parts of the same system. 
+multi-objective optimization was applied  systems containing hierarchical  constraints, where   the analysis could access all knowledge of  internal structure.
+That structural knowledge was exploited via {\em push} and {\em pull} strategies that use decisions made in one part of a system to reduce the search space elsewhere in the system. 
 
 In order to distinguish this ``other approach''
-we call these kind of problems {\em white box} or {\em structural}
+we call these  problems {\em white box} or {\em structural}
 optimization. In our opinion, based
 on a reading of the current literature, functional
-optimization is more widely-applicable hence more widely-used than structural optimization.
+optimization is more widely-applicable hence more widely-used than structural optimization. Hence,
+this paper explores  functional optimizers like GALE since these will have more application areas.
   
 
 
@@ -784,7 +786,24 @@ Rather, it uses a non-parametric approach (see below).
 That said, GALE and  Zuluaga et al.  do share one  assumption; i.e that the Pareto frontier can be approximated by many tiny models. 
  
 
+\subsection{Preference-Based MOEA}
 
+GALE's active learner can be viewed as a tool that biases a search towards ``interesting''
+regions in the search space. The results shown below indicate that this kind of biasing
+can find solutions much faster than, say, the standard random employed by genetic algorithms.
+
+The potential weakness of random
+mutation has been recognised by the evolutionary computing community for a long time.
+Various improvements on random search have been proposed.
+For example, Peng et al.~\cite{peng09:ls} have augmented MOEAs with
+local search  (i.e. applying a problem-specific repair/improvement
+heuristic on some current solution).
+Also, Igel et al.'s~\cite{igel07} multi-objective
+covariance matrix adaptation evolution strategy
+can run the mutations along  ``ridges'' in the search space.
+However, prior to this paper, no such work has appeared
+in   SE . Also, to the best of our knowledge, GALE's cost reduction of MOEA
+to $O(2log_2N)$ evaluations  has not been previously reported in the SBSE literature.
 
 
 
@@ -969,6 +988,7 @@ def improved(old,new):
 \end{minipage}
 \end{figure}
 
+\input{cocont}
 
 
  
@@ -982,7 +1002,6 @@ CDA takes hours to complete
 a single evaluation. Hence, it is an good example for exploring
 the advantages of  GALE's active learning.
 
-\input{cocont}
 
 \input{xomo}
 
@@ -1191,13 +1210,13 @@ to comparatively evaluate  GALE vs NSGA-II vs SPEA2.
 Elsewhere~\cite{krall15:hms}, we offer an extensive discussion of the theory behind the CDA model
 and the cognitive implications of the decisions made by GALE. 
 
-\subsection{Maths Models}
+\subsection{Benchmark Models}
 
-Apart from the above three models, we also explore numerous small maths models that are often used to benchmark MOEA problems 
+Apart from the above three models, we also explore numerous small benchmark models that are often used to assess MOEA problems 
 These models are called BNH, Golinski, Srinivas, Two-bar Truss, Viennet2, Water, ZDT(1,2,3,4 and 6), and DTLZ(1,2,3,4,5 and 6).
 The  DTLZ suite of models is particularly useful for evaluation of MOEAs since, by adjusting certain model  parameters, it is possible to generate problems with a wide range of decisions and objectives~\cite{Zitzler2000zdtpaper,dtlz2001a}.
 
-For full  details on the maths models, including their decisions
+For full  details on the benchmark models, including their decisions
 and objectives, see the  appendix and \fig{uncon}, \fig{con}, \fig{dtlzmodels}.
 
 
@@ -1459,8 +1478,16 @@ a 2 GHz Intel Core i7 MacBook Air, with 8GB of 1600 MHz DDR3 memory.
 
 
 \begin{figure}[!b]
-%\includegraphics[width=2in]{tim/runSpear2.png}\includegraphics[width=1in]{tim/runNsgaii.png}
-\includegraphics[width=3.45in]{barcharts_runtime_relativeToGale_v2.png}
+%\includegraphics[width=2in]{tim/runSpear2.png} 
+\begin{center}
+\noindent
+\includegraphics[width=2.25in]{figures/barcharts_runtime_NSGAII_relativeToGale.png}
+
+~\\
+
+\noindent
+\includegraphics[width=2.25in]{figures/barcharts_runtime_SPEA2_relativeToGale.png}
+\end{center}
 \caption{NSGA-II, SPEA2, runtimes, relative to GALE (mean values
 over all runs) e.g.,
 with SPEA2, ZDT1 ran 1.5 times slower than GALE.}\label{fig:runSpea2} 
@@ -1470,7 +1497,7 @@ with SPEA2, ZDT1 ran 1.5 times slower than GALE.}\label{fig:runSpea2}
 
 \begin{figure}[!b]
 %\includegraphics[width=3.5in]{tim/evals.png}
-\includegraphics[width=3in]{barcharts_numeval_v2.png}
+\includegraphics[width=3.25in]{barcharts_numeval_v2.png}
 \caption{Number of evaluations in units of 250 (means over all runs), sorted
 by max. number of evaluations.}\label{fig:evals} 
 \end{figure}
@@ -1526,7 +1553,7 @@ by max. number of evaluations.}\label{fig:evals}
 \fig{runGale} shows GALE's runtimes.
 Recall that our models form two groups:
 the {\em larger models} include XOMO,POM, CDA
-and the {\em smaller maths models} include  ZDT, Golinski, Water, Viennet2,Two-Bar Truss, Srivinas.
+and the {\em smaller benchmark models} include  ZDT, Golinski, Water, Viennet2,Two-Bar Truss, Srivinas.
 As seen in that figure,
 most of the smaller models took two seconds, or less,  to optimize.
 On the other hand, the larger models took longer (e.g. CDA needed four minutes).
@@ -1607,6 +1634,44 @@ All numbers are ratios of mean hypervolumes and spreads achieved in 20 repeated 
 At 100\%, the mean hypervolumes and spreads achieved by GALE are the same as the other optimizers.
 In this figure,  {\em better} hypervolumes are {\em larger} while {\em better} spreads are {\em smaller}.}\label{fig:rmodels}
 \end{figure}
+
+For example, \fig{rmodels} shows the ratio of mean hypervolumes 
+and spreads found in 20 repeated runs of three optimizers. All numbers are ratios of GALE's results divided
+by either NSGS-II or SPEA2.  
+
+The Srivinas, POM3c and ZDT2 results were
+excluded from \fig{rmodels} after an A12 effect size test
+reported a ``small effect'' for the performance deltas between GALE and the other optimizers.
+All the other results have the property that $\mathit{A12} \ge 0.6$; i.e. they are not trivially small
+differences
+  (this A12
+  test was recently endorsed by Arcuri and
+  Briand at ICSE'11~\cite{arcuri11} as an
+  appropriate test to check for trivially small
+  differences when studying stochastic processes).
+
+\fig{rmodels} shows that for $\frac{5}{17}$
+of the smaller benchmark models (XOMO FL, XOMO GR, and
+ZDT346) GALE's hypervolumes were much lower than the
+other optimizers.  On the other hand, GALE's
+hypervolumes are comparable, or better, for most of
+the small benchmark models: \bi
+\item
+GALE does better than NSGA-II in BNH, POM3a, POM3b and XOMO
+O2.
+\item As seen in 
+\fig{rmodels}, the hypervolumes are very similar for Two-Bar Truss,
+Viennet2 and ZDT1.  
+\item
+Also, as mentioned
+above the Srivinas and POM3c and ZDT2 results were only trivially different.
+\ei
+Other quality indicators offer other evidence for
+the
+value of GALE's reasoning. For example, \fig{rmodels} shows that GALE
+consistently achieves lower and better spreads than the other optimizers.
+
+
 \begin{figure}[!t]
 \scriptsize
 \centering
@@ -1634,12 +1699,12 @@ models	&	POM3B-d9-o4	&	92\%	&	\colorbox{lightgray}{90\%}	&	\colorbox{lightgray}{
 	&	POM3C-d9-o4	&	96\%	&	\colorbox{lightgray}{94\%}	&	96\%	\\ \hline
 Constrained	&	BNH-d2-o2	&	98\%	&	\colorbox{lightgray}{75\%}	&	97\%	\\
 %&	Osyczka2-d6-o2	&	77\%	&	\colorbox{lightgray}{69\%}	&	78\%	\\
-maths&	Srinivas-d2-o2	&	95\%	&	\colorbox{lightgray}{80\%}	&	95\%	\\
+benchmark&	Srinivas-d2-o2	&	95\%	&	\colorbox{lightgray}{80\%}	&	95\%	\\
 %	&	Tanaka-d2-o2	&	\colorbox{lightgray}{84\%}	&	85\%	&	85\%	\\
 models	&	TwoBarTruss-d3-o2	&	95\%	&	\colorbox{lightgray}{78\%}	&	95\%	\\
 	&	Water-d3-o5	&	95\%	&	\colorbox{lightgray}{90\%}	&	95\%	\\ \hline
 Unconstrained	&	Golinski-d7-o2	&	81\%	&	\colorbox{lightgray}{65\%}	&	81\%	\\
-math	&	Viennet2-d2-o3	&	\colorbox{lightgray}{73\%}	&	\colorbox{lightgray}{73\%}	&	\colorbox{lightgray}{73\%}	\\
+benchmark	&	Viennet2-d2-o3	&	\colorbox{lightgray}{73\%}	&	\colorbox{lightgray}{73\%}	&	\colorbox{lightgray}{73\%}	\\
 %&	Viennet3-d2-o3	&	88\%	&	\colorbox{lightgray}{78\%}	&	88\%	\\
 %	&	Viennet4-d2-o3	&	90\%	&	\colorbox{lightgray}{77\%}	&	89\%	\\
 models	&	ZDT1-d30-o2	&	85\%	&	\colorbox{lightgray}{81\%}	&	85\%	\\
@@ -1658,41 +1723,13 @@ the model has 27 decisions and 4 objectives.  }
 \label{fig:whateveryouwannacallme}
 \end{figure}
 
-For example, \fig{rmodels} shows the ratio of mean hypervolumes 
-and spreads found in 20 repeated runs of three optimizers. All numbers are ratios of GALE's results divided
-by either NSGS-II or SPEA2.  
 
-The Srivinas, POM3c and ZDT2 results were
-excluded from \fig{rmodels} after an A12 effect size test
-reported a ``small effect'' for the performance deltas between GALE and the other optimizers.
-All the other results have the property that $\mathit{A12} \ge 0.6$; i.e. they are not trivially small
-differences
-  (this A12
-  test was recently endorsed by Arcuri and
-  Briand at ICSE'11~\cite{arcuri11} as an
-  appropriate test to check for trivially small
-  differences when studying stochastic processes).
+\begin{figure}
+\includegraphics[width=3.25in]{dtlzResults1.png}
+\caption{Quality results from DTLZ with (20,40,60,80) decisions and two objectives.
+See \fig{rmodels}; i.e. better hypervolumes are {\em larger} while {\em better} spreads are {\em smaller}.}\label{fig:dtlz}
+\end{figure}
 
-\fig{rmodels} shows that for $\frac{5}{17}$
-of the smaller maths models (XOMO FL, XOMO GR, and
-ZDT346) GALE's hypervolumes were much lower than the
-other optimizers.  On the other hand, GALE's
-hypervolumes are comparable, or better, for most of
-the small maths models: \bi
-\item
-GALE does better than NSGA-II in BNH, POM3a, POM3b and XOMO
-O2.
-\item As seen in 
-\fig{rmodels}, the hypervolumes are very similar for Two-Bar Truss,
-Viennet2 and ZDT1.  
-\item
-Also, as mentioned
-above the Srivinas and POM3c and ZDT2 results were only trivially different.
-\ei
-Other quality indicators offer other evidence for
-the
-value of GALE's reasoning. For example, \fig{rmodels} shows that GALE
-consistently achieves lower and better spreads than the other optimizers.
 
 As to the {\em improvement}, 
  \fig{whateveryouwannacallme} shows the
@@ -1710,17 +1747,6 @@ are amongst the best for all the optimizers used in this study.
 
 
  
-
-
-
- 
-
-\begin{figure}
-\includegraphics[width=3.25in]{dtlzResults1.png}
-\caption{Quality results from DTLZ with (20,40,60,80) decisions and two objectives.
-See \fig{rmodels}; i.e. better hypervolumes are {\em larger} while {\em better} spreads are {\em smaller}.}\label{fig:dtlz}
-\end{figure}
-
 \begin{figure*}[!t]
 \includegraphics[width=7in]{dtlzResults2.png}
 \caption{DTLZ1; d=20, o=2,4,6,8.
@@ -1743,8 +1769,14 @@ of the mean objective scores seen in the baseline population before any optimiza
 For these objectives, {\em better} scores are {\em smaller}.
 }\label{fig:o2468}
 \end{figure*}
+
+
+ 
+
+
+
 \input{xomoresults}
-\begin{figure*}[!t]
+\begin{figure*}
  \includegraphics[width=6.5in]{figures/figure_analytics_obj_score_plots.png}
 \caption{POM results: 20 repeats of each MOEA (one row
 per scenario). Same format as \fig{xomoresults}' i.e.
@@ -1799,9 +1831,9 @@ so using  orders of magnitude fewer evaluations than
 
 
 
-\subsubsection{Summary of Results from Maths Models}
+\subsubsection{Summary of Results from Benchmark Models}
 
-These results from our smaller maths models all show similar trends.
+These results from our smaller Benchmark models all show similar trends.
 GALE's truncated search sometimes explores a
 smaller set of solutions than other
 optimizers.  Hence, as one might have expected, GALE's hypervolumes can be smaller than other optimizers. On the other hand,
@@ -1993,7 +2025,7 @@ are based on the study that applies a few optimizers to the
 and the 43 models explored later in this paper. For the record these
 are:
 \bi
-\item Small maths problems such as those offered in the appendix;
+\item Small benchmark problems such as those offered in the appendix;
 \item Larger software process models (XOMO and POM);
 \item Very large cognitive models in situations were
 computers mediate the control surfaces explored by people (CDA).
@@ -2139,7 +2171,7 @@ or otherwise, does not constitute or imply its endorsement by the United States 
 
 %\color{MyDarkBlue}
 \section*{Appendix}
-The maths models used in this paper are shown in the next few pages.
+The benchmark models used in this paper are shown in the next few pages.
 \color{black}
 
 \begin{figure*}[!t]\scriptsize
@@ -2239,7 +2271,7 @@ The maths models used in this paper are shown in the next few pages.
 
 
                 \end{tabular}
-                \caption[Defining the Unconstrained Math Models]{Unconstrained standard maths
+                \caption[Defining the Unconstrained Math Models]{Unconstrained standard benchmark
 models. All objectives
 are to be minimized unless otherwise denoted.}
         \label{fig:uncon}
@@ -2330,7 +2362,7 @@ are to be minimized unless otherwise denoted.}
                                 \end{tabular}\\ \hline
                 \end{tabular}
                 
-                \caption[Defining the Constrained Math Models]{Constrained maths models.
+                \caption[Defining the Constrained Math Models]{Constrained benchmark models.
 All objectives to be minimized unless otherwise denoted.}\label{fig:con}
 \end{figure*}
 
@@ -2415,10 +2447,7 @@ to be minimized unless otherwise denoted.}
 
 \bibliography{references}
 
-
-
-\newpage
-
+ 
 \begin{IEEEbiography}[{\includegraphics[width=1in,clip,keepaspectratio]{images/joe.png}}]{Joseph Krall}
 (Ph.D., WVU)
 is a Postdoctoral Research Fellow funded by the National Science Foundation and is employed  at
@@ -2463,6 +2492,119 @@ For more information, see her web site http://ti.arc.nasa.gov/profile/mdavies
 or her  list of publications at
 http://ti.arc.nasa.gov/profile/mdavies/papers.
 \end{IEEEbiography}
+
+
+\clearpage
+ \setcounter{page}{1}
+\pagenumbering{Roman}
+\section*{Reponse to Reviews}
+
+Dear Prof. Cleland-Huang,
+
+
+We write to express our thanks to you, and the other reviewers,
+for the detailed and helpful feedback on the previous draft. 
+
+Using those notes as a guide,
+we have made many  changes all over this document (as detailed below). 
+For example, the following sections are either new or extensively rewritten: Section 1 and 2.1, 2.8, 7.1.
+
+Your specific comments are shown below, in bold.
+
+{\bf 1.  As per Reviewer3 - several of the conclusions you draw in this paper are already known and accepted in the more general community.  Please state clearly that you are exploring these claims specifically for the SBSE community.}
+
+(We think in the above sentence, you mean Reviewer4).
+
+Reviewer4 pointed us towards some excellent work on MOEAs and preference-based search. Based on that input, we added section 2.8 (which actually includes some the Reviewer4’s text), including the specification that this work is local to SE.
+
+Reviewer4 also noted we should remove some overly-general claims and we agreed. Accordingly, the last paragraphs of the Introduction and Conclusion were removed.
+
+{\bf 2.  As per Reviewer3 - some important references are missing and need to be added.}
+
+(We think in the above sentence, you mean Reviewer4).
+
+Reviewer4 offered some excellent suggestions and we have changed/added the references at their suggestion. 
+
+{\bf 3.  As per Reviewer3 - question 2 "Does GALE return similar or better solutions than other MOEA tools?" is a rather simplistic question - because it is well known in almost every data mining domain that different algorithms perform better under different circumstances.   While it is OK to ask this question you should (1) constrain the question to the SBSE domain, and (2) broaden it to discuss ``under what circumstances''.}
+
+In section 6 (end) and 7.1 we take care to offer the restrictions you note above. Also, for the “under what circumstances” message, see the {\em two} dot lists at the end of 7.1
+
+{\bf 4. You need to explain why you are not comparing against the state of the art.  For example, why NSGA-II and not NSGA-III.  Was this a timing issue related to the release of NSGA-III vs. the time at which the work was performed?  This MUST be addressed.  Reviewer1 is not yet satisfied that you have fully explained why you didn't compare to your previous approach - IBEA.}
+
+
+So the questions ism why did we not compare against IBEA or NSGA-III?
+
+\underline{{\em REGARDING IBEA:}} Speaking as one of the authors of the two papers that made IBEA an SBSE ``state of the art algorithm'' (in our ICSE’13 and ASE’13 papers), I think it is a misreading of those papers to declare that the 2004  IBEA algorithm by Zitzler and   Kunzli is now {\bf the} benchmark against which all new algorithms need to be compare. 
+\bi
+\item
+In our ICSE’13 paper we concluded that the continuous domination predicate used by IBEA was a good idea. Now we use continuous domination inside GALE while NSGA-II and SPEA2 use boolean domination.
+So for this part of IBEA, we have a used/ do not use comparison.
+\item
+In our ASE’13 paper, that conclusion was really not about IBEA but about continuous domination and the  PUSH,PULL heuristics   (updating variable bindings after every mutation thus reducing the subsequent search space). Now PUSH,PULL is only relevant for the small number of models were we can access
+the dependencies within the internal structures. As Harman says (in our quote on p3), this is not the usual SBSE problem. So while we really like the ASE'13 paper, it is really about a very specific
+kind of model.  GALE, on the other hand, is our preferred tool for the more general class of black-box
+models
+\ei
+(By the way, in the new section 2.1 and the suggestion of Reviewer2,  we take great care to specify the range of model types
+where we would/ would not use GALE.)
+
+\underline{{\em REGARDING NSGA-III:}}
+NSGA-III was evolved to extend multi-objective (which is usually 2 or 3) to many-objective (10 to 20). If our case was GALE was the best many-objective algorithm, then of course we would have to compare GALE against NSGA-III.
+
+But that is not our case. GALE is all about reducing the number of evaluations, not better handling of many-objective problems.
+
+Also, as we read the literature, the jury is still out on NSGA-III. As we added to the paper:
+
+\begin{quote}
+New MOEA  algorithms are being invented all the time. Late in the development of this project, the authors became aware of a new version of NSGA-II which, according to its authors~\cite{6600851} performed better for large number of objectives. The merits of this new approach is still be assessed and some results suggest that, in terms of improving objectives, it is not necessarily a superior approach~\cite{sato14}. That said, we know of no similar work in the SBSE literature that claims anything like GALE's massive reductions in the number of evaluations.
+\end{quote}
+
+Finally, we note  that NSGA-III only appeared very late in the development of GALE (in fact, at the time of GALE’s first TSE submission, we were unaware of it). In fact, to the best of our knowledge, NSGA-III implementations only started appearing in the standard toolkits in 2015 (see http://goo.gl/x7N9Be)  and there is no NSGA-III implementation in the DEAP toolkit used in this study. 
+
+Now one of my newest grad students plans an NSGA-III implementation in Python but he is having much trouble coding it up from Deb’s pseudocode. Also he is reporting some interesting quirks in the recent C++ implementation of NSGA-III http://goo.gl/gbcWnO that makes us wonder if Deb needs to be much clearer in the NSGA-III description.
+
+{\bf  5. As per Reviewer2 - several of the images are small/blurry and therefore hard to read.  I realize that you are running into space issues - however each diagram needs to be large enough to read.}
+
+Fig9, Fig10,Fig11 fixed. We are particularly proud of the new fig 11.
+
+{\bf 6. Reviewer 1 still complains about the application to Software Engineering.  However, I believe you have done a good job in showing the applicability to software engineering problems and therefore I am satisfied with this aspect of the paper.  On the other hand - please see my next comment!}
+
+OK
+ 
+{\bf 7. Reviewer 1 complains about the writing - especially that of the introduction.  I have to agree that the introduction is more in the style of a technical report than an introduction to a TSE paper.  Here are some specific suggestions for improvement:
+
+(i) In the opening paragraph explain what you mean by "options of their systems".  Make the problem more concrete for the reader.  You can do this in two sentences and it will help set the context.
+
+(ii) I don't think that process steps listed 1,2,3 work very well for an introduction.  Try to provide a better overview of the novelty of your approach - highlighting what is novel about it but saving the steps of the algorithm for a later section.
+
+(iii)  I'm also personally unconvinced about including Research questions on the first page.  This whole section should be about motivation.  You can explain in words what you want to evaluate and then state the research questions in another section.
+
+(iv) I *particularly* dislike the style of section  1.2.  I understand that you are trying to directly address reviewers concerns - but this isn't the right way to do it.  You shouldn't need to *ask*  the question "What does all this have to do with SE?" because you should have *already* answered it in the introduction.  The problem with your introduction is that you didn't answer it adequately so must recourse to Q\&A.   Questions 2 and 3 are similarly problematic.  So I would sit back and completely redo the introduction.}
+
+Good suggestions- see the  better organized section 1.
+
+As to the over   reviewers  comments, we thank them for their suggestions and have made many changes.
+Typos have been fixed; the blurred images have been enhanced.
+Also, at the suggestion of Reviewer2,
+the decisions and optimization points for these models are now listed at the start of all the subsections of Section4.
+
+Reviewer2 also asked for a simple description of the mathematical optimization problem solved by GALE. That is now at the start of section 2 (and the technical terms in that definition are expanded in that section).
+
+Reviewer3 asks: 
+\begin{quote}The argument that you used only one run of CDA because it would take a week to do the 20 runs. With the cheap hardware/software configuration you used, I find it hard to believe that it is not an acceptable/affordable time to spend.
+\end{quote}
+The thing to note here is that while the other models could be run on local machines, CDA could **only** be run on NASA machines in their supercomputer center. This is a resource that is used, heavily, by the NASA Ames researchers. Also, if there are ever any incidents on current missions, all research is kicked off those supercomputers while they run massive “what if” scenarios on the missions. 
+
+Reviewer4 made many useful suggestions: 
+\bi
+\item
+Thanks to that input, we added some very interesting new citations (in section 2.8) and fixing of some previously incorrect citations.
+\item
+Reviewer4 also suggested some simplifications that clarified the paper, see points 1,2 above.
+\item
+They  also suggested we rename our “maths” problems to “benchmark” problems- which we did. Many thanks!
+\ei
+
 
 
 
